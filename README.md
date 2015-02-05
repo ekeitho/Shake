@@ -1,8 +1,38 @@
 # Shake
-409 Cloud Services project for Winter 2015 called Shake.
-Is an app that allows you to find your friends that are near you by just shaking your phone.
+CPE 409 Developing with Cloud Services
+Winter 2015
 
-The user must set their location to noticable for others to find them. Let's say for instance you got to school, but remembered it was daylight saving's time and you got there an hour earlier. You want to see who is around campus that you know, just by shaking your phone.
+Vision
+  Conveniently find locations of others and optimize the process of regrouping
+    Find friends at events in which separation from group is plausible e.g. music festivals, bars, shopping centers,             casinos
+    Find friends in general vicinity
+  
+Scope
+  All Android and iOS users
+  Events in which group separation is plausible and regrouping is an issue
+  
+  
+Design
+  General friend list
+    Friends can be found via Facebook friends or phone number
+    Friends can be trusted
+      Can request location of trusted friends until untrusted or friend becomes hidden
+    Trust circles (groups)
+      All members of a trust circle are mutually trusted
+      GroupMe and Facebook integration
+  Finding friends
+    Individual:
+      Not trusted: Trackee must give permission to be tracked
+      Trusted: Does not require trackee permission
+    Trust circle:
+      Does not require trackee permission for any trackee in circle
+    Display movement flow between historical poll locations
+  Communication
+    Photo sharing: ability to provide a visual location reference
+    Group chat
+  Other features
+    Force vibrations - Increases chance that receivers will check phones regardless of phone volume settings
+
 ```
 -- Team Details --
 Product Owner: Keith Abdulla
@@ -10,6 +40,9 @@ Scrum Master: Thomas Nguyen
 Rest of Team: Tam Nguyen, Tim Ramos
 ```
 
-Low-Fidelity Prototype:  To come...
+REST API's: 
+  Facebook
+  Google Maps
 
-REST API: Using Facebook's API and Parse for BaaS.
+Tools:
+  Parse - BaaS
