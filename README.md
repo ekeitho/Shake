@@ -18,10 +18,11 @@ General friend list
 
     Friends can be found via Facebook friends or phone number
     Friends can be trusted
-            Can request location of trusted friends until untrusted or friend becomes hidden
+      Can request location of trusted friends until untrusted or friend becomes hidden
     Trust circles (groups)
       All members of a trust circle are mutually trusted
       GroupMe and Facebook integration
+      
  Finding friends
  
     Individual:
@@ -35,6 +36,7 @@ Communication
 
     Photo sharing: ability to provide a visual location reference
     Group chat
+    
 Other features
 
     Force vibrations - Increases chance that receivers will check phones regardless of phone volume settings
@@ -48,8 +50,13 @@ Rest of Team: Tam Nguyen, Tim Ramos
 ```
 
 REST API's: 
-  Facebook
-  Google Maps
+
+    Facebook 
+    Google Maps
+    GroupMe
 
 Tools:
-  Parse - BaaS
+
+    Parse
+    taiga.io
+    github
