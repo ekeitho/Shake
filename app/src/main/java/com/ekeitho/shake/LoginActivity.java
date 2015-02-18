@@ -16,10 +16,6 @@ public class LoginActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-
-        Parse.initialize(this, "Il62bTwt2UPvyLkGGEIBvY9xSYNsPC8EljZbyz0R", "2Qp7n7BWLQgGFxf3J0PFPCWLzcAMnIlGDSp6h87A");
 
         if (savedInstanceState == null) {
             // Add the fragment on initial activity setup

@@ -39,17 +39,12 @@ public class LoginFragment extends Fragment {
             new SessionStatusCallback();
 
     private static final String TAG = "LoginFragment";
-    private Session.StatusCallback callback = new Session.StatusCallback() {
-        @Override
-        public void call(Session session, SessionState state, Exception exception) {
-            onSessionStateChange(session, state, exception);
-        }
-    };
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        uiHelper = new UiLifecycleHelper(getActivity(), callback);
+        uiHelper = new UiLifecycleHelper(getActivity(), statusCallback);
         uiHelper.onCreate(savedInstanceState);
     }
 
