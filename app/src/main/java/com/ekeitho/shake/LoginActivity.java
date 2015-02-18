@@ -1,17 +1,31 @@
 package com.ekeitho.shake;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends Activity {
+public class LoginActivity extends FragmentActivity {
+
+    private LoginFragment loginFragment;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        if (savedInstanceState == null) {
+            // Add the fragment on initial activity setup
+            loginFragment = new LoginFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(android.R.id.content, loginFragment)
+                    .commit();
+        } else {
+            // Or set the fragment from restored state info
+            loginFragment = (LoginFragment) getSupportFragmentManager()
+                    .findFragmentById(android.R.id.content);
+        }
     }
 
 
