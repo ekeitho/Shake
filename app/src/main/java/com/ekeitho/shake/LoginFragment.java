@@ -7,11 +7,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by ekeitho on 2/18/15.
@@ -19,6 +29,7 @@ import com.facebook.widget.LoginButton;
 public class LoginFragment extends Fragment {
 
     private UiLifecycleHelper uiHelper;
+    private TextView userInfoTextView;
 
     private static final String TAG = "LoginFragment";
 
@@ -35,6 +46,8 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.login, container, false);
         LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
+        userInfoTextView = (TextView) view.findViewById(R.id.userInfoTextView);
+        authButton.setReadPermissions(Arrays.asList("user_location", "user_birthday", "user_likes"));
         authButton.setFragment(this);
 
         return view;
@@ -43,8 +56,21 @@ public class LoginFragment extends Fragment {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
+            userInfoTextView.setVisibility(View.VISIBLE);
+            // Request user data and show the results
+            Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
+
+                @Override
+                public void onCompleted(GraphUser user, Response response) {
+                    if (user != null) {
+                        // Display the parsed user info
+                        userInfoTextView.setText(buildUserInfoDisplay(user));
+                    }
+                }
+            });
         } else if (state.isClosed()) {
             Log.i(TAG, "Logged out...");
+            userInfoTextView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -92,6 +118,48 @@ public class LoginFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         uiHelper.onSaveInstanceState(outState);
+    }
+
+    private String buildUserInfoDisplay(GraphUser user) {
+        StringBuilder userInfo = new StringBuilder("");
+
+        // Example: typed access (name)
+        // - no special permissions required
+        userInfo.append(String.format("Name: %s\n\n",
+                user.getName()));
+
+        // Example: typed access (birthday)
+        // - requires user_birthday permission
+        userInfo.append(String.format("Birthday: %s\n\n",
+                user.getBirthday()));
+
+        // Example: partially typed access, to location field,
+        // name key (location)
+        // - requires user_location permission
+        userInfo.append(String.format("Location: %s\n\n",
+                user.getLocation().getProperty("name")));
+
+        // Example: access via property name (locale)
+        // - no special permissions required
+        userInfo.append(String.format("Locale: %s\n\n",
+                user.getProperty("locale")));
+
+        // Example: access via key for array (languages)
+        // - requires user_likes permission
+        JSONArray languages = (JSONArray)user.getProperty("languages");
+        if (languages != null && languages.length() > 0) {
+            ArrayList<String> languageNames = new ArrayList<String> ();
+            for (int i=0; i < languages.length(); i++) {
+                JSONObject language = languages.optJSONObject(i);
+                // Add the language name to a list. Use JSON
+                // methods to get access to the name field.
+                languageNames.add(language.optString("name"));
+            }
+            userInfo.append(String.format("Languages: %s\n\n",
+                    languageNames.toString()));
+        }
+
+        return userInfo.toString();
     }
 
 }

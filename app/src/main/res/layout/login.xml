@@ -19,6 +19,16 @@
             android:layout_marginTop="30dp"
             />
 
+        <TextView
+            android:id="@+id/userInfoTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="invisible"
+            />
+
     </LinearLayout>
 
 </RelativeLayout>
