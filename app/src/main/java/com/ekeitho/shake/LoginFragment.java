@@ -16,6 +16,10 @@ import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
 import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,10 +32,19 @@ import java.util.Arrays;
  */
 public class LoginFragment extends Fragment {
 
+    /* facebook life cycle helper - listeners on changes of the ui */
     private UiLifecycleHelper uiHelper;
     private TextView userInfoTextView;
+    private Session.StatusCallback statusCallback =
+            new SessionStatusCallback();
 
     private static final String TAG = "LoginFragment";
+    private Session.StatusCallback callback = new Session.StatusCallback() {
+        @Override
+        public void call(Session session, SessionState state, Exception exception) {
+            onSessionStateChange(session, state, exception);
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,15 +60,26 @@ public class LoginFragment extends Fragment {
         View view = inflater.inflate(R.layout.login, container, false);
         LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
         userInfoTextView = (TextView) view.findViewById(R.id.userInfoTextView);
-        authButton.setReadPermissions(Arrays.asList("user_location", "user_birthday", "user_likes"));
         authButton.setFragment(this);
 
         return view;
     }
 
+
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
+
+            ParseFacebookUtils.logIn(getActivity(), new LogInCallback() {
+                @Override
+                public void done(ParseUser user, ParseException error) {
+                    // When your user logs in, immediately get and store its Facebook ID
+                    if (user != null) {
+                        getFacebookIdInBackground();
+                    }
+                }
+            });
+
             userInfoTextView.setVisibility(View.VISIBLE);
             // Request user data and show the results
             Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
@@ -74,12 +98,24 @@ public class LoginFragment extends Fragment {
         }
     }
 
-    private Session.StatusCallback callback = new Session.StatusCallback() {
+    private class SessionStatusCallback implements Session.StatusCallback {
         @Override
         public void call(Session session, SessionState state, Exception exception) {
-            onSessionStateChange(session, state, exception);
+            // Respond to session state changes, ex: updating the view
         }
-    };
+    }
+
+    private void onClickLogin() {
+        Session session = Session.getActiveSession();
+        if (!session.isOpened() && !session.isClosed()) {
+            session.openForRead(new Session.OpenRequest(this)
+                    .setPermissions(Arrays.asList("public_profile"))
+                    .setCallback(statusCallback));
+        } else {
+            Session.openActiveSession(getActivity(), this, true, statusCallback);
+        }
+    }
+
 
     @Override
     public void onResume() {
@@ -163,4 +199,15 @@ public class LoginFragment extends Fragment {
         return userInfo.toString();
     }
 
+    private static void getFacebookIdInBackground() {
+        Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
+            @Override
+            public void onCompleted(GraphUser user, Response response) {
+                if (user != null) {
+                    ParseUser.getCurrentUser().put("fbId", user.getId());
+                    ParseUser.getCurrentUser().saveInBackground();
+                }
+            }
+        });
+    }
 }
