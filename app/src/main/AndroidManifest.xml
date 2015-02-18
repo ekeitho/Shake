@@ -24,7 +24,7 @@
             android:label="title_facebook_login" >
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ShakeMainActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
