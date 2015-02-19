@@ -20,6 +20,7 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,6 +38,7 @@ public class LoginFragment extends Fragment {
     private TextView userInfoTextView;
     private Session.StatusCallback statusCallback =
             new SessionStatusCallback();
+    private ParseUser mUser;
 
     private static final String TAG = "LoginFragment";
 
@@ -54,39 +56,48 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.login, container, false);
         LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
+        authButton.setReadPermissions(Arrays.asList("user_location", "user_birthday", "user_likes"));
         userInfoTextView = (TextView) view.findViewById(R.id.userInfoTextView);
         authButton.setFragment(this);
 
         return view;
     }
 
-
+    /* fires when user logs in or logs out */
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
 
             ParseFacebookUtils.logIn(getActivity(), new LogInCallback() {
                 @Override
-                public void done(ParseUser user, ParseException error) {
-                    // When your user logs in, immediately get and store its Facebook ID
-                    if (user != null) {
-                        getFacebookIdInBackground();
+                public void done(final ParseUser parseUser, ParseException e) {
+                    Log.d("MyApp", "Initiating parse login.");
+                    if (!ParseFacebookUtils.isLinked((parseUser))) {
+                        Log.d("MyApp", "Not facebook linked...");
+                        ParseFacebookUtils.link(parseUser, getActivity(), new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (ParseFacebookUtils.isLinked(parseUser)) {
+                                    Log.d("MyApp", "Woohoo, user logged in with Facebook!");
+                                }
+                            }
+                        });
                     }
                 }
             });
 
             userInfoTextView.setVisibility(View.VISIBLE);
-            // Request user data and show the results
+            /* Request user data and show the results via Facebook Graph Api */
             Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
-
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
                     if (user != null) {
-                        // Display the parsed user info
+                        /* Display the parsed user info */
                         userInfoTextView.setText(buildUserInfoDisplay(user));
                     }
                 }
             });
+
         } else if (state.isClosed()) {
             Log.i(TAG, "Logged out...");
             userInfoTextView.setVisibility(View.INVISIBLE);
@@ -97,17 +108,6 @@ public class LoginFragment extends Fragment {
         @Override
         public void call(Session session, SessionState state, Exception exception) {
             // Respond to session state changes, ex: updating the view
-        }
-    }
-
-    private void onClickLogin() {
-        Session session = Session.getActiveSession();
-        if (!session.isOpened() && !session.isClosed()) {
-            session.openForRead(new Session.OpenRequest(this)
-                    .setPermissions(Arrays.asList("public_profile"))
-                    .setCallback(statusCallback));
-        } else {
-            Session.openActiveSession(getActivity(), this, true, statusCallback);
         }
     }
 
