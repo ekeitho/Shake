@@ -2,6 +2,7 @@ package com.ekeitho.shake;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
  */
 public class TestFragment extends android.support.v4.app.Fragment {
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_maps, container, false);
@@ -18,8 +20,10 @@ public class TestFragment extends android.support.v4.app.Fragment {
         CustomMapFragment mapFragment = new CustomMapFragment();
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.add(R.id.map_container, mapFragment).commit();
+        Log.d("MyApp", "Test Fragment on create view.");
 
         return rootView;
     }
+
 
 }
