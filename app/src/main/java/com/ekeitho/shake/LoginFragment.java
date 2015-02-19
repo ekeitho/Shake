@@ -1,5 +1,6 @@
 package com.ekeitho.shake;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -40,6 +41,7 @@ public class LoginFragment extends Fragment {
             new SessionStatusCallback();
     private ParseUser mUser;
 
+
     private static final String TAG = "LoginFragment";
 
 
@@ -57,7 +59,7 @@ public class LoginFragment extends Fragment {
         View view = inflater.inflate(R.layout.login, container, false);
         LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
         authButton.setReadPermissions(Arrays.asList("user_location", "user_birthday", "user_likes"));
-        userInfoTextView = (TextView) view.findViewById(R.id.userInfoTextView);
+        //userInfoTextView = (TextView) view.findViewById(R.id.userInfoTextView);
         authButton.setFragment(this);
 
         return view;
@@ -86,14 +88,14 @@ public class LoginFragment extends Fragment {
                 }
             });
 
-            userInfoTextView.setVisibility(View.VISIBLE);
+            //userInfoTextView.setVisibility(View.VISIBLE);
             /* Request user data and show the results via Facebook Graph Api */
             Request.executeMeRequestAsync(session, new Request.GraphUserCallback() {
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
                     if (user != null) {
                         /* Display the parsed user info */
-                        userInfoTextView.setText(buildUserInfoDisplay(user));
+                        //userInfoTextView.setText(buildUserInfoDisplay(user));
                     }
                 }
             });
@@ -194,15 +196,4 @@ public class LoginFragment extends Fragment {
         return userInfo.toString();
     }
 
-    private static void getFacebookIdInBackground() {
-        Request.executeMeRequestAsync(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
-            @Override
-            public void onCompleted(GraphUser user, Response response) {
-                if (user != null) {
-                    ParseUser.getCurrentUser().put("fbId", user.getId());
-                    ParseUser.getCurrentUser().saveInBackground();
-                }
-            }
-        });
-    }
 }

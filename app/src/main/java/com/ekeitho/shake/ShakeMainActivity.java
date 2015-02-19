@@ -14,11 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.parse.Parse;
 
 
 public class ShakeMainActivity extends FragmentActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    private GoogleMap mMap; // Might be null if Google Play services APK is not available.
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -57,7 +60,6 @@ public class ShakeMainActivity extends FragmentActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if( position == 0) {
-
             fragmentManager.beginTransaction()
                     .replace(R.id.container,  new LoginFragment())
                     .addToBackStack(null).commit();
@@ -118,6 +120,7 @@ public class ShakeMainActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -157,5 +160,7 @@ public class ShakeMainActivity extends FragmentActivity
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
+
+
 
 }
