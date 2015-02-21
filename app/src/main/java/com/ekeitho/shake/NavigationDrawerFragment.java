@@ -3,14 +3,15 @@ package com.ekeitho.shake;
 
 import android.app.Activity;
 import android.app.ActionBar;
-import android.app.Fragment;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +23,19 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.SessionState;
+import com.facebook.UiLifecycleHelper;
+import com.facebook.model.GraphUser;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
@@ -29,6 +43,7 @@ import android.widget.Toast;
  */
 public class NavigationDrawerFragment extends Fragment {
 
+    private static final String TAG = "NavigationDrawerFragment";
     /**
      * Remember the position of the selected item.
      */
@@ -60,8 +75,46 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+    private UiLifecycleHelper uiHelper;
+    private Session.StatusCallback statusCallback =
+            new SessionStatusCallback();
+
     public NavigationDrawerFragment() {
     }
+
+    private class SessionStatusCallback implements Session.StatusCallback {
+        @Override
+        public void call(Session session, SessionState state, Exception exception) {
+            // Respond to session state changes, ex: updating the view
+
+        }
+    }
+
+    /* fires when user logs in or logs out */
+    private void onSessionStateChange(Session session, SessionState state, Exception exception) {
+        if (state.isOpened()) {
+            Log.i(TAG, "Logged in...");
+
+
+            new Request(
+                    session,
+                    "/me",
+                    null,
+                    HttpMethod.GET,
+                    new Request.Callback() {
+                        public void onCompleted(Response response) {
+            /* handle the result */
+                            System.out.println("HEYHEYHEY " + response);
+                        }
+                    }
+            ).executeAsync();
+
+        } else if (state.isClosed()) {
+            Log.i(TAG, "Logged out...");
+        }
+    }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +129,26 @@ public class NavigationDrawerFragment extends Fragment {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
         }
+
+        uiHelper = new UiLifecycleHelper(getActivity(), statusCallback);
+        uiHelper.onCreate(savedInstanceState);
+
+
+        Session session = Session.getActiveSession();
+
+
+        new Request(
+                session,
+                "/me",
+                null,
+                HttpMethod.GET,
+                new Request.Callback() {
+                    public void onCompleted(Response response) {
+            /* handle the result */
+                        System.out.println("HEYHEYHEY " + response);
+                    }
+                }
+        ).executeAsync();
 
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
@@ -107,6 +180,7 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.title_section1),
                         getString(R.string.title_section2),
                         getString(R.string.title_section3),
+                        getString(R.string.title_section3)
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;

@@ -1,6 +1,5 @@
 package com.ekeitho.shake;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -58,7 +57,8 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.login, container, false);
         LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
-        authButton.setReadPermissions(Arrays.asList("user_location", "user_birthday", "user_likes"));
+        authButton.setReadPermissions(Arrays.asList(
+                    "user_location", "user_birthday", "user_likes", "user_groups"));
         //userInfoTextView = (TextView) view.findViewById(R.id.userInfoTextView);
         authButton.setFragment(this);
 
