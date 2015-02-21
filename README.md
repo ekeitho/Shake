@@ -60,3 +60,26 @@ Tools:
     Parse
     taiga.io
     github
+    
+Technical Overview:
+
+Coding Languages and why
+    
+    Java for Android Platform because it is the native language for the platform
+    
+Cloud Platform and why
+    
+    Parse for backend data storage
+API structure and why
+    
+    Facebook Graph API to pull friends, create groups, and send requests because it is already well established and takes care of social connections
+    Google Maps for maps and location services because it is already well established
+    
+Cloud Database used to store application data, and why.
+    
+    Parse for backend data storage because it is already used by Facebook API
+    
+Code repository used, and why.
+    
+    GitHub because it’s what we used in class and is a very efficient subversion control system
+
