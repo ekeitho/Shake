@@ -15,7 +15,7 @@ public class TestFragment extends android.support.v4.app.Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.activity_maps, container, false);
+        View rootView = inflater.inflate(R.layout.map_container, container, false);
 
         CustomMapFragment mapFragment = new CustomMapFragment();
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();

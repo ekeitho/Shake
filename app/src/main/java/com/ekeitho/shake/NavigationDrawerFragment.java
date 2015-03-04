@@ -75,43 +75,8 @@ public class NavigationDrawerFragment extends Fragment {
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
-    private UiLifecycleHelper uiHelper;
-    private Session.StatusCallback statusCallback =
-            new SessionStatusCallback();
 
     public NavigationDrawerFragment() {
-    }
-
-    private class SessionStatusCallback implements Session.StatusCallback {
-        @Override
-        public void call(Session session, SessionState state, Exception exception) {
-            // Respond to session state changes, ex: updating the view
-
-        }
-    }
-
-    /* fires when user logs in or logs out */
-    private void onSessionStateChange(Session session, SessionState state, Exception exception) {
-        if (state.isOpened()) {
-            Log.i(TAG, "Logged in...");
-
-
-            new Request(
-                    session,
-                    "/me",
-                    null,
-                    HttpMethod.GET,
-                    new Request.Callback() {
-                        public void onCompleted(Response response) {
-            /* handle the result */
-                            System.out.println("HEYHEYHEY " + response);
-                        }
-                    }
-            ).executeAsync();
-
-        } else if (state.isClosed()) {
-            Log.i(TAG, "Logged out...");
-        }
     }
 
 
@@ -129,9 +94,6 @@ public class NavigationDrawerFragment extends Fragment {
             mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
             mFromSavedInstanceState = true;
         }
-
-        uiHelper = new UiLifecycleHelper(getActivity(), statusCallback);
-        uiHelper.onCreate(savedInstanceState);
 
 
         Session session = Session.getActiveSession();
