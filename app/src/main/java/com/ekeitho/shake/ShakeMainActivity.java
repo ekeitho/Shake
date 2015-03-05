@@ -16,6 +16,7 @@ import com.facebook.Response;
 import com.facebook.Session;
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,6 +47,10 @@ public class ShakeMainActivity extends FragmentActivity
      * ArrayList to contain the facebook groups.
      */
     private ArrayList<JSONObject> groups = new ArrayList<>();
+
+    ParseUser parse_user;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +143,7 @@ public class ShakeMainActivity extends FragmentActivity
         for (int i = 0; i < groups.size(); i++) {
             try {
                 group_names[i] = groups.get(i).getString("name");
+
             } catch(JSONException e) {
                 Log.v("ShakeMainActivity", "Bad Json Call");
             }
@@ -156,17 +162,25 @@ public class ShakeMainActivity extends FragmentActivity
                 new Request.Callback() {
                     public void onCompleted(Response response) {
                         /* handle the result */
+                        parse_user = ParseUser.getCurrentUser();
 
-                        JSONObject json = response.getGraphObject().getInnerJSONObject();
-                        try {
+                        try
+                        {
+                            JSONObject json = response.getGraphObject().getInnerJSONObject();
                             JSONArray j_array = json.getJSONArray("data");
+                            String[] ids = new String[j_array.length()];
 
                             for (int i = 0; i < j_array.length(); i++) {
                                 JSONObject obj = j_array.getJSONObject(i);
                                 groups.add(obj);
+                                ids[i] = obj.getString("id");
                             }
 
-                        mNavigationDrawerFragment.updateGroups(getGroupNames());
+
+                            parse_user.put("group_ids", new JSONArray(ids));
+                            parse_user.saveInBackground();
+
+                            mNavigationDrawerFragment.updateGroups(getGroupNames());
 
                         } catch (JSONException e) {
                             Log.d("NavDrawerFrag", "Bad json key for json array.");
