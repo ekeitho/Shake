@@ -83,9 +83,28 @@ public class ShakeMainActivity extends FragmentActivity
             fragmentManager.beginTransaction()
                     .replace(R.id.container,  new LoginFragment())
                     .addToBackStack(null).commit();
-        } else {
-            /* temp */
-            System.out.println("Selected " + position);
+        }
+
+        if (groups != null && groups.size() != 0) {
+            try {
+                new Request(
+                        session,
+                        "/" + groups.get(position).getString("id") + "/members",
+                        null,
+                        HttpMethod.GET,
+                        new Request.Callback() {
+                            public void onCompleted(Response response) {
+                        /* handle the result */
+                                parse_user = ParseUser.getCurrentUser();
+
+                                System.out.println(response);
+
+                            }
+                        }
+                ).executeAsync();
+            } catch (JSONException e) {
+                Log.d("SMA", "Bad json call");
+            }
         }
     }
 
