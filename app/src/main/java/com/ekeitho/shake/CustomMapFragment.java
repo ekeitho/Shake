@@ -37,14 +37,14 @@ public class CustomMapFragment extends com.google.android.gms.maps.SupportMapFra
         LatLng loc = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
 
         /* save the parse location when first connecting */
-        parse_user.put("location", new ParseGeoPoint(loc.latitude, loc.longitude));
-        parse_user.saveInBackground();
+/*        parse_user.put("location", new ParseGeoPoint(loc.latitude, loc.longitude));
+        parse_user.saveInBackground();*/
 
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+        googleMap.clear();
         googleMap.addMarker(new MarkerOptions()
-                        .position(loc)
-                        .title("Me!"));
-
+                .position(loc)
+                .title("Me!"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
     }
 
     @Override
