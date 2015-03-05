@@ -15,13 +15,16 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 
+import com.facebook.HttpMethod;
+import com.facebook.Request;
+import com.facebook.Response;
 import com.facebook.Session;
 import com.google.android.gms.maps.GoogleMap;
 import com.parse.Parse;
 
 
 public class ShakeMainActivity extends FragmentActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, SessionSave {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -126,6 +129,24 @@ public class ShakeMainActivity extends FragmentActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void save(Session session) {
+        this.session = session;
+
+        new Request(
+                session,
+                "/me",
+                null,
+                HttpMethod.GET,
+                new Request.Callback() {
+                    public void onCompleted(Response response) {
+            /* handle the result */
+                        System.out.println("HEYHEYHEY " + response);
+                    }
+                }
+        ).executeAsync();
     }
 
 

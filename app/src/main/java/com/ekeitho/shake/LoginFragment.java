@@ -1,5 +1,6 @@
 package com.ekeitho.shake;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -39,6 +40,7 @@ public class LoginFragment extends Fragment {
     private Session.StatusCallback statusCallback =
             new SessionStatusCallback();
     private ParseUser mUser;
+    private SessionSave sessionSave;
 
 
     private static final String TAG = "LoginFragment";
@@ -68,6 +70,8 @@ public class LoginFragment extends Fragment {
     private void onSessionStateChange(Session session, SessionState state, Exception exception) {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
+
+            sessionSave.save(session);
 
             ParseFacebookUtils.logIn(getActivity(), new LogInCallback() {
                 @Override
@@ -122,6 +126,13 @@ public class LoginFragment extends Fragment {
         ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
         uiHelper.onActivityResult(requestCode, resultCode, data);
     }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        sessionSave = (SessionSave) getActivity();
+    }
+
 
     @Override
     public void onPause() {
