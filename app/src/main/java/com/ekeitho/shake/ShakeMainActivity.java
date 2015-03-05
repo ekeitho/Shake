@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 
+import com.facebook.Session;
 import com.google.android.gms.maps.GoogleMap;
 import com.parse.Parse;
 
@@ -31,6 +32,11 @@ public class ShakeMainActivity extends FragmentActivity
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
     private CharSequence mTitle;
+
+    /**
+     * Will be null, until the user logs in. Session saved inside of LoginFragment.
+     */
+    private Session session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
