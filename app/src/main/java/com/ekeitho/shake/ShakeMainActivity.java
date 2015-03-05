@@ -166,7 +166,6 @@ public class ShakeMainActivity extends FragmentActivity
                                 groups.add(obj);
                             }
 
-
                         mNavigationDrawerFragment.updateGroups(getGroupNames());
 
                         } catch (JSONException e) {
