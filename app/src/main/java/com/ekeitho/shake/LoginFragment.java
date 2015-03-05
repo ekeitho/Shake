@@ -70,6 +70,7 @@ public class LoginFragment extends Fragment {
                 @Override
                 public void done(final ParseUser parseUser, ParseException e) {
                     Log.d("MyApp", "Initiating parse login.");
+                    
                     if (!ParseFacebookUtils.isLinked((parseUser))) {
                         Log.d("MyApp", "Not facebook linked...");
                         ParseFacebookUtils.link(parseUser, getActivity(), new SaveCallback() {

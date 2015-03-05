@@ -11,6 +11,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.ParseUser;
 
 /**
  * Created by ekeitho on 2/18/15.
@@ -22,6 +23,8 @@ public class CustomMapFragment extends com.google.android.gms.maps.SupportMapFra
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private GoogleMap googleMap;
+
+    ParseUser user = ParseUser.getCurrentUser();
 
     @Override
     public void onConnected(Bundle bundle) {
