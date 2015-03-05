@@ -10,11 +10,13 @@ import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
 
+import com.ekeitho.shake.parse.User;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.parse.Parse;
+import com.parse.ParseObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,6 +54,7 @@ public class ShakeMainActivity extends FragmentActivity
         setContentView(R.layout.shake_activity_main);
 
 
+        ParseObject.registerSubclass(User.class);
         /* Enable Local Datastore */
         Parse.enableLocalDatastore(this);
         /* initialization of our parse data */
