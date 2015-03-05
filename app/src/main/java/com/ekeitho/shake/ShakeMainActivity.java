@@ -63,11 +63,6 @@ public class ShakeMainActivity extends FragmentActivity
         setContentView(R.layout.shake_activity_main);
 
 
-        /* Enable Local Datastore */
-        Parse.enableLocalDatastore(this);
-        /* initialization of our parse data */
-        Parse.initialize(this, "Il62bTwt2UPvyLkGGEIBvY9xSYNsPC8EljZbyz0R", "2Qp7n7BWLQgGFxf3J0PFPCWLzcAMnIlGDSp6h87A");
-
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
