@@ -1,17 +1,12 @@
 package com.ekeitho.shake;
 
-import android.app.Activity;
-
 import android.app.ActionBar;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 
@@ -19,12 +14,18 @@ import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
-import com.google.android.gms.maps.GoogleMap;
 import com.parse.Parse;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 
 public class ShakeMainActivity extends FragmentActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, SessionSave {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ShakeCommunicator {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -40,6 +41,11 @@ public class ShakeMainActivity extends FragmentActivity
      * Will be null, until the user logs in. Session saved inside of LoginFragment.
      */
     private Session session;
+
+    /**
+     * ArrayList to contain the facebook groups.
+     */
+    private ArrayList<JSONObject> groups;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,25 +79,16 @@ public class ShakeMainActivity extends FragmentActivity
                     .replace(R.id.container,  new LoginFragment())
                     .addToBackStack(null).commit();
         } else {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                    .commit();
+            /* temp */
+            System.out.println("Selected " + position);
         }
     }
 
     public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-            case 4:
-                mTitle = getString(R.string.title_section3);
-                break;
+        try {
+            mTitle = groups.get(number).getString("name");
+        } catch (JSONException e) {
+            Log.v("ShakeMainActivity", "Bad json access");
         }
     }
 
@@ -132,62 +129,58 @@ public class ShakeMainActivity extends FragmentActivity
     }
 
     @Override
-    public void save(Session session) {
+    public void saveSession(Session session) {
         this.session = session;
 
+        getGroupData(session);
+    }
+
+    /*
+        A method that is intended to be called from a fragment, to get the
+        array of group names
+     */
+    @Override
+    public String[] getGroups() {
+
+        String[] group_names = new String[groups.size()];
+        for (int i = 0; i < groups.size(); i++) {
+            try {
+                group_names[i] = groups.get(i).getString("name");
+            } catch(JSONException e) {
+                Log.v("ShakeMainActivity", "Bad Json Call");
+            }
+        }
+        return group_names;
+    }
+
+    private void getGroupData(Session ses) {
         new Request(
-                session,
-                "/me",
+                ses,
+                "/me/groups",
                 null,
                 HttpMethod.GET,
                 new Request.Callback() {
                     public void onCompleted(Response response) {
-            /* handle the result */
-                        System.out.println("HEYHEYHEY " + response);
+                        /* handle the result */
+
+                        JSONObject json = response.getGraphObject().getInnerJSONObject();
+                        try {
+                            JSONArray j_array = json.getJSONArray("data");
+
+                            for (int i = 0; i < j_array.length(); i++) {
+                                JSONObject obj = j_array.getJSONObject(i);
+                                groups.add(obj);
+                            }
+
+
+                        } catch (JSONException e) {
+                            Log.d("NavDrawerFrag", "Bad json key for json array.");
+                        }
+
                     }
                 }
         ).executeAsync();
     }
 
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.blank_fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((ShakeMainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-    }
 
 }

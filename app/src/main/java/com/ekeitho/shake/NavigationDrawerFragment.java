@@ -36,6 +36,13 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Map;
+
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
@@ -65,7 +72,8 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private ActionBarDrawerToggle mDrawerToggle;
 
-    private String[] groups;
+    private ShakeCommunicator shakeCommunicator;
+
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
@@ -77,8 +85,8 @@ public class NavigationDrawerFragment extends Fragment {
 
 
     public NavigationDrawerFragment() {
-    }
 
+    }
 
 
     @Override
@@ -95,26 +103,10 @@ public class NavigationDrawerFragment extends Fragment {
             mFromSavedInstanceState = true;
         }
 
-
-        Session session = Session.getActiveSession();
-
-
-        new Request(
-                session,
-                "/me",
-                null,
-                HttpMethod.GET,
-                new Request.Callback() {
-                    public void onCompleted(Response response) {
-            /* handle the result */
-                        System.out.println("HEYHEYHEY " + response);
-                    }
-                }
-        ).executeAsync();
-
         // Select either the default item (0) or the last selected item.
         selectItem(mCurrentSelectedPosition);
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -122,6 +114,8 @@ public class NavigationDrawerFragment extends Fragment {
         // Indicate that this fragment would like to influence the set of actions in the action bar.
         setHasOptionsMenu(true);
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -138,12 +132,8 @@ public class NavigationDrawerFragment extends Fragment {
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
-                new String[]{
-                        getString(R.string.title_section1),
-                        getString(R.string.title_section2),
-                        getString(R.string.title_section3),
-                        getString(R.string.title_section3)
-                }));
+                shakeCommunicator.getGroups()
+        ));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -244,6 +234,7 @@ public class NavigationDrawerFragment extends Fragment {
         super.onAttach(activity);
         try {
             mCallbacks = (NavigationDrawerCallbacks) activity;
+            shakeCommunicator = (ShakeCommunicator) getActivity();
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
         }

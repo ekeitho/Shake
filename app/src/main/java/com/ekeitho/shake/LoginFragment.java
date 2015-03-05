@@ -10,12 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.facebook.Request;
-import com.facebook.Response;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.model.GraphUser;
 import com.facebook.widget.LoginButton;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -23,10 +20,6 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -40,7 +33,7 @@ public class LoginFragment extends Fragment {
     private Session.StatusCallback statusCallback =
             new SessionStatusCallback();
     private ParseUser mUser;
-    private SessionSave sessionSave;
+    private ShakeCommunicator shakeCommunicator;
 
 
     private static final String TAG = "LoginFragment";
@@ -71,7 +64,7 @@ public class LoginFragment extends Fragment {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
 
-            sessionSave.save(session);
+            shakeCommunicator.saveSession(session);
 
             ParseFacebookUtils.logIn(getActivity(), new LogInCallback() {
                 @Override
@@ -130,7 +123,7 @@ public class LoginFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        sessionSave = (SessionSave) getActivity();
+        shakeCommunicator = (ShakeCommunicator) getActivity();
     }
 
 
