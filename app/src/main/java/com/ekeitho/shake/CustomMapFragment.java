@@ -36,6 +36,7 @@ public class CustomMapFragment extends com.google.android.gms.maps.SupportMapFra
 
         LatLng loc = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
 
+        /* save the parse location when first connecting */
         parse_user.put("location", new ParseGeoPoint(loc.latitude, loc.longitude));
         parse_user.saveInBackground();
 
