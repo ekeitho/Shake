@@ -23,26 +23,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.facebook.HttpMethod;
-import com.facebook.Request;
-import com.facebook.Response;
-import com.facebook.Session;
-import com.facebook.SessionState;
-import com.facebook.UiLifecycleHelper;
-import com.facebook.model.GraphUser;
-import com.parse.LogInCallback;
-import com.parse.ParseException;
-import com.parse.ParseFacebookUtils;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Map;
-
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
  * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
@@ -74,6 +54,9 @@ public class NavigationDrawerFragment extends Fragment {
 
     private ShakeCommunicator shakeCommunicator;
 
+    private String[] group_names;
+
+    private ArrayAdapter<String> adapter;
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
@@ -128,14 +111,37 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+
+
+        group_names = shakeCommunicator.getGroupNames();
+
+        adapter = new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
-                shakeCommunicator.getGroups()
-        ));
+                group_names
+        );
+
+        mDrawerListView.setAdapter(adapter);
+
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
+    }
+
+    /*
+        Whenever the user logs in, this will update their groups tab.
+     */
+    public void updateGroups(String[] arr) {
+        group_names = arr;
+
+        adapter = new ArrayAdapter<String>(
+                getActionBar().getThemedContext(),
+                android.R.layout.simple_list_item_activated_1,
+                android.R.id.text1,
+                arr
+        );
+        mDrawerListView.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
     }
 
     public boolean isDrawerOpen() {

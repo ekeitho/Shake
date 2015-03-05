@@ -21,7 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 
 public class ShakeMainActivity extends FragmentActivity
@@ -45,7 +44,7 @@ public class ShakeMainActivity extends FragmentActivity
     /**
      * ArrayList to contain the facebook groups.
      */
-    private ArrayList<JSONObject> groups;
+    private ArrayList<JSONObject> groups = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,14 +80,6 @@ public class ShakeMainActivity extends FragmentActivity
         } else {
             /* temp */
             System.out.println("Selected " + position);
-        }
-    }
-
-    public void onSectionAttached(int number) {
-        try {
-            mTitle = groups.get(number).getString("name");
-        } catch (JSONException e) {
-            Log.v("ShakeMainActivity", "Bad json access");
         }
     }
 
@@ -140,7 +131,7 @@ public class ShakeMainActivity extends FragmentActivity
         array of group names
      */
     @Override
-    public String[] getGroups() {
+    public String[] getGroupNames() {
 
         String[] group_names = new String[groups.size()];
         for (int i = 0; i < groups.size(); i++) {
@@ -150,6 +141,8 @@ public class ShakeMainActivity extends FragmentActivity
                 Log.v("ShakeMainActivity", "Bad Json Call");
             }
         }
+
+
         return group_names;
     }
 
@@ -172,6 +165,8 @@ public class ShakeMainActivity extends FragmentActivity
                                 groups.add(obj);
                             }
 
+
+                        mNavigationDrawerFragment.updateGroups(getGroupNames());
 
                         } catch (JSONException e) {
                             Log.d("NavDrawerFrag", "Bad json key for json array.");

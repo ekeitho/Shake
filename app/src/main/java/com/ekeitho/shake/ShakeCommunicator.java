@@ -12,5 +12,5 @@ import java.util.ArrayList;
  */
 public interface ShakeCommunicator {
     public void saveSession(Session session);
-    public String[] getGroups();
+    public String[] getGroupNames();
 }
