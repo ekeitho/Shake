@@ -1,4 +1,4 @@
-package com.ekeitho.shake;
+package com.ekeitho.shake.login;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
+import com.ekeitho.shake.R;
 import com.parse.ParseUser;
 
 /**
@@ -40,7 +41,7 @@ public class ShakeLoginActivity extends Activity {
                 // logs out on older devices, we'll just exit.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     Intent intent = new Intent(ShakeLoginActivity.this,
-                            ShakeDispatchActivity.class);
+                            ShakeLoginDispatachActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
                             | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);

@@ -14,13 +14,13 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:name=".ShakeApplication"
+        android:name=".login.ShakeApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ShakeDispatchActivity"
+            android:name=".login.ShakeLoginDispatachActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop">
             <intent-filter>
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ShakeLoginActivity"
+            android:name=".login.ShakeLoginActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"/>
         <activity
