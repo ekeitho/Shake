@@ -14,8 +14,12 @@ import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
+import com.parse.FindCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONArray;
@@ -23,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class ShakeMainActivity extends FragmentActivity
@@ -85,17 +90,46 @@ public class ShakeMainActivity extends FragmentActivity
                     .addToBackStack(null).commit();
         }
 
+
         if (groups != null && groups.size() != 0) {
             try {
                 new Request(
-                        session,
+                        ParseFacebookUtils.getSession(),
                         "/" + groups.get(position).getString("id") + "/members",
                         null,
                         HttpMethod.GET,
                         new Request.Callback() {
                             public void onCompleted(Response response) {
-                        /* handle the result */
+                                /* handle the result */
                                 parse_user = ParseUser.getCurrentUser();
+                                try
+                                {
+
+                                    ArrayList<String> ids = new ArrayList<String>();
+                                    JSONObject json = response.getGraphObject().getInnerJSONObject();
+                                    JSONArray j_array = json.getJSONArray("data");
+
+                                    for (int i = 0; i < j_array.length(); i++) {
+                                        JSONObject obj = j_array.getJSONObject(i);
+                                        ids.add(obj.getString("id"));
+                                    }
+
+                                    ParseQuery<ParseUser> parseQuery = ParseQuery.getQuery(ParseUser.class);
+                                    parseQuery.whereContainedIn("fbid", ids);
+                                    parseQuery.findInBackground(new FindCallback<ParseUser>() {
+                                        @Override
+                                        public void done(List<ParseUser> parseUsers, ParseException e) {
+                                            /* if the size of the parseUsers is greater then one
+                                                then we have successfull tracked someone from the group
+                                             */
+                                            System.out.println("WOAHHHHHH " + parseUsers.size());
+                                        }
+                                    });
+
+                                } catch (JSONException e) {
+                                    Log.d("NavDrawerFrag", "Bad json key for json array.");
+                                }
+
 
                                 System.out.println(response);
 
@@ -173,6 +207,7 @@ public class ShakeMainActivity extends FragmentActivity
     }
 
     private void getGroupData(Session ses) {
+        /* get data for the groups and store the results */
         new Request(
                 ses,
                 "/me/groups",
@@ -195,7 +230,6 @@ public class ShakeMainActivity extends FragmentActivity
                                 ids[i] = obj.getString("id");
                             }
 
-
                             parse_user.put("group_ids", new JSONArray(ids));
                             parse_user.saveInBackground();
 
@@ -205,6 +239,28 @@ public class ShakeMainActivity extends FragmentActivity
                             Log.d("NavDrawerFrag", "Bad json key for json array.");
                         }
 
+                    }
+                }
+        ).executeAsync();
+
+        /* get data just for yourself and store id */
+        new Request(
+                ses,
+                "/me",
+                null,
+                HttpMethod.GET,
+                new Request.Callback() {
+                    public void onCompleted(Response response) {
+                        /* handle the result */
+                        parse_user = ParseUser.getCurrentUser();
+
+                        try {
+                            parse_user.put("fbid",
+                                    response.getGraphObject().getInnerJSONObject().getString("id"));
+                            parse_user.saveInBackground();
+                        } catch(JSONException e) {
+
+                        }
                     }
                 }
         ).executeAsync();
