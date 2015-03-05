@@ -10,12 +10,20 @@ import com.parse.ParseObject;
 
 @ParseClassName("User")
 public class User extends ParseObject {
+
+    public void setName(String name) {
+        put("name", name);
+    }
     public void setLocation(ParseGeoPoint geoPoint) {
        put("location", geoPoint);
     }
 
     public ParseGeoPoint getLocation() {
         return getParseGeoPoint("location");
+    }
+
+    public String getName() {
+        return getString("name");
     }
 }
 
