@@ -11,6 +11,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 /**
@@ -19,12 +21,12 @@ import com.parse.ParseUser;
 public class CustomMapFragment extends com.google.android.gms.maps.SupportMapFragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
-    private final LatLng HAMBURG = new LatLng(53.558, 9.927);
+
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private GoogleMap googleMap;
 
-    ParseUser user = ParseUser.getCurrentUser();
+    ParseUser parse_user = ParseUser.getCurrentUser();
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -34,11 +36,14 @@ public class CustomMapFragment extends com.google.android.gms.maps.SupportMapFra
 
         LatLng loc = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
 
+        parse_user.put("location", new ParseGeoPoint(loc.latitude, loc.longitude));
+        parse_user.saveInBackground();
+
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
         googleMap.addMarker(new MarkerOptions()
                         .position(loc)
                         .title("Me!"));
-                
+
     }
 
     @Override
