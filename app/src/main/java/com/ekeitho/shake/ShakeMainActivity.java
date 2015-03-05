@@ -122,7 +122,6 @@ public class ShakeMainActivity extends FragmentActivity
                                             /* if the size of the parseUsers is greater then one
                                                 then we have successfull tracked someone from the group
                                              */
-                                            System.out.println("WOAHHHHHH " + parseUsers.size());
                                         }
                                     });
 
