@@ -15,10 +15,8 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.Session;
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
-import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -61,7 +59,7 @@ public class ShakeMainActivity extends FragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.shake_activity_main);
+        setContentView(R.layout.main_activity_with_navigation_drawer);
 
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
