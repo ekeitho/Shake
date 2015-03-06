@@ -27,9 +27,4 @@ public class MapContainerFragment extends android.support.v4.app.Fragment {
         return rootView;
     }
 
-
-    public void communicate(String groupName) {
-        System.out.println("Groupname: " + groupName);
-    }
-
 }
