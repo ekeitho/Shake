@@ -22,11 +22,15 @@ public class MapContainerFragment extends android.support.v4.app.Fragment {
 
         CustomMapFragment mapFragment = new CustomMapFragment();
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.add(R.id.map_container, mapFragment).commit();
+        transaction.add(R.id.map_container, mapFragment, "MAP_FRAG").commit();
         Log.d("MyApp", "Test Fragment on create view.");
 
         return rootView;
     }
 
+
+    public void communicate(String groupName) {
+        System.out.println("Groupname: " + groupName);
+    }
 
 }

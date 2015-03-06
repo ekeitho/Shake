@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
 
+import com.ekeitho.shake.map.CustomMapFragment;
+import com.ekeitho.shake.map.MapContainerFragment;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Response;
@@ -29,7 +31,7 @@ import java.util.List;
 
 
 public class ShakeMainActivity extends FragmentActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ShakeMapCommunicator {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -52,6 +54,11 @@ public class ShakeMainActivity extends FragmentActivity
      * ArrayList to contain the facebook groups.
      */
     private ArrayList<JSONObject> groups = new ArrayList<>();
+
+    /**
+     * Custom Map Fragment will be null until google map api is initialized
+     */
+    private CustomMapFragment customMapFragment;
 
     /**
      * Group names in string format for easy accessibility.
@@ -107,6 +114,9 @@ public class ShakeMainActivity extends FragmentActivity
             } else {
                 Log.d(TAG, "Action bar is null. Debug!");
             }
+
+            customMapFragment.communicate(mTitle.toString());
+
 
             try {
                 new Request(
@@ -273,4 +283,8 @@ public class ShakeMainActivity extends FragmentActivity
         return group_names;
     }
 
+    @Override
+    public void receiveMapFragment(CustomMapFragment customMapFragment) {
+      this.customMapFragment = customMapFragment;
+    }
 }

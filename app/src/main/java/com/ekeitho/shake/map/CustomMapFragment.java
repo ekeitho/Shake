@@ -1,9 +1,11 @@
 package com.ekeitho.shake.map;
 
+import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.ekeitho.shake.ShakeMapCommunicator;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -12,7 +14,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 /**
@@ -25,7 +26,8 @@ public class CustomMapFragment extends com.google.android.gms.maps.SupportMapFra
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
     private GoogleMap googleMap;
-
+    private ParseUser parse_user = ParseUser.getCurrentUser();
+    private ShakeMapCommunicator shakeMapCommunicator;
 
 
     @Override
@@ -37,14 +39,27 @@ public class CustomMapFragment extends com.google.android.gms.maps.SupportMapFra
         LatLng loc = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
 
         /* save the parse location when first connecting */
-/*        parse_user.put("location", new ParseGeoPoint(loc.latitude, loc.longitude));
-        parse_user.saveInBackground();*/
+        parse_user.put("location", new ParseGeoPoint(loc.latitude, loc.longitude));
+        parse_user.saveInBackground();
+
+        /* now it's connected, give main activity a reference to this fragment */
+        shakeMapCommunicator.receiveMapFragment(this);
 
         googleMap.clear();
         googleMap.addMarker(new MarkerOptions()
                 .position(loc)
                 .title("Me!"));
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        shakeMapCommunicator = (ShakeMapCommunicator) getActivity();
+    }
+
+    public void communicate(String groupName) {
+        System.out.println("Groupname: " + groupName);
     }
 
     @Override
