@@ -1,4 +1,4 @@
-package com.ekeitho.shake;
+package com.ekeitho.shake.map;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -26,7 +26,7 @@ public class CustomMapFragment extends com.google.android.gms.maps.SupportMapFra
     private Location mLastLocation;
     private GoogleMap googleMap;
 
-    ParseUser parse_user = ParseUser.getCurrentUser();
+
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -70,10 +70,8 @@ public class CustomMapFragment extends com.google.android.gms.maps.SupportMapFra
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.d("MyApp", "Begin on activity");
         googleMap = getMap();
         buildGoogleApiClient();
-        Log.d("MyApp", "End on activity created.");
     }
 
 

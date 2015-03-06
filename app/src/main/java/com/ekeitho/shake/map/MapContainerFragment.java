@@ -1,4 +1,4 @@
-package com.ekeitho.shake;
+package com.ekeitho.shake.map;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -7,10 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ekeitho.shake.R;
+import com.ekeitho.shake.map.CustomMapFragment;
+
 /**
  * Created by ekeitho on 2/18/15.
  */
-public class TestFragment extends android.support.v4.app.Fragment {
+public class MapContainerFragment extends android.support.v4.app.Fragment {
 
 
     @Override

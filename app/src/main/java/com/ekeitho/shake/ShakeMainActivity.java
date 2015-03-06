@@ -53,6 +53,7 @@ public class ShakeMainActivity extends FragmentActivity
      */
     private ArrayList<JSONObject> groups = new ArrayList<>();
 
+
     ParseUser parse_user;
 
 
