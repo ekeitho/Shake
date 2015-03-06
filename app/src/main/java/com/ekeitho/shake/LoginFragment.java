@@ -13,14 +13,11 @@ import android.widget.TextView;
 import com.facebook.Session;
 import com.facebook.SessionState;
 import com.facebook.UiLifecycleHelper;
-import com.facebook.widget.LoginButton;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-
-import java.util.Arrays;
 
 /**
  * Created by ekeitho on 2/18/15.
@@ -50,7 +47,7 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.login, container, false);
+        View view = inflater.inflate(R.layout.main_fragment, container, false);
 
 
         return view;
@@ -66,7 +63,7 @@ public class LoginFragment extends Fragment {
             ParseFacebookUtils.logIn(getActivity(), new LogInCallback() {
                 @Override
                 public void done(final ParseUser parseUser, ParseException e) {
-                    Log.d("MyApp", "Initiating parse login.");
+                    Log.d("MyApp", "Initiating parse main_fragment.");
                     
                     if (!ParseFacebookUtils.isLinked((parseUser))) {
                         Log.d("MyApp", "Not facebook linked...");

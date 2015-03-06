@@ -301,7 +301,7 @@ public class NavigationDrawerFragment extends Fragment {
             /* announce */
             Toast.makeText(getActivity(), "Logged out.", Toast.LENGTH_SHORT).show();
 
-            /* reset back to login screen */
+            /* reset back to main_fragment screen */
             Intent intent = new Intent(getActivity(),
                     ShakeLoginDispatachActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK

@@ -25,7 +25,7 @@ public class ShakeLoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.login_activity);
+        setContentView(R.layout.login_screen_activity);
         titleTextView = (TextView) findViewById(R.id.profile_title);
         emailTextView = (TextView) findViewById(R.id.profile_email);
         nameTextView = (TextView) findViewById(R.id.profile_name);
