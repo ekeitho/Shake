@@ -19,7 +19,7 @@ import com.parse.ParseUser;
 /**
  * Created by ekeitho on 2/18/15.
  */
-public class CustomMapFragment extends com.google.android.gms.maps.SupportMapFragment implements
+public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportMapFragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
 

@@ -10,8 +10,7 @@ import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
 
 
-import com.ekeitho.shake.map.CustomMapFragment;
-import com.ekeitho.shake.map.MapContainerFragment;
+import com.ekeitho.shake.map.FriendsMapAreaFragment;
 import com.facebook.HttpMethod;
 import com.facebook.Request;
 import com.facebook.Response;
@@ -58,7 +57,7 @@ public class ShakeMainActivity extends FragmentActivity
     /**
      * Custom Map Fragment will be null until google map api is initialized
      */
-    private CustomMapFragment customMapFragment;
+    private FriendsMapAreaFragment friendsMapAreaFragment;
 
     /**
      * Group names in string format for easy accessibility.
@@ -115,7 +114,8 @@ public class ShakeMainActivity extends FragmentActivity
                 Log.d(TAG, "Action bar is null. Debug!");
             }
 
-            customMapFragment.communicate(mTitle.toString());
+            /* communicate with the fragment on clicks */
+            friendsMapAreaFragment.communicate(mTitle.toString());
 
 
             try {
@@ -284,7 +284,7 @@ public class ShakeMainActivity extends FragmentActivity
     }
 
     @Override
-    public void receiveMapFragment(CustomMapFragment customMapFragment) {
-      this.customMapFragment = customMapFragment;
+    public void receiveMapFragment(FriendsMapAreaFragment friendsMapAreaFragment) {
+      this.friendsMapAreaFragment = friendsMapAreaFragment;
     }
 }
