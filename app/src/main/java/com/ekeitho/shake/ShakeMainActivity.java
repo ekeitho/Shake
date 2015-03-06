@@ -29,7 +29,7 @@ import java.util.List;
 
 
 public class ShakeMainActivity extends FragmentActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, ShakeCommunicator {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -46,10 +46,19 @@ public class ShakeMainActivity extends FragmentActivity
      */
     private Session session;
 
+    private final static String TAG = "ShakeMainActivity";
+
     /**
      * ArrayList to contain the facebook groups.
      */
     private ArrayList<JSONObject> groups = new ArrayList<>();
+
+    /**
+     * Group names in string format for easy accessibility.
+     */
+    private String[] group_names;
+
+    private int load_flag = 0;
 
 
     ParseUser parse_user;
@@ -66,6 +75,9 @@ public class ShakeMainActivity extends FragmentActivity
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
+
+        getGroupData(ParseFacebookUtils.getSession());
+
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
@@ -78,7 +90,8 @@ public class ShakeMainActivity extends FragmentActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if( position == 0) {
+        if( position == 0 && load_flag == 0) {
+            load_flag = 1;
             fragmentManager.beginTransaction()
                     .replace(R.id.container,  new ShakeMainFragment())
                     .addToBackStack(null).commit();
@@ -86,6 +99,15 @@ public class ShakeMainActivity extends FragmentActivity
 
 
         if (groups != null && groups.size() != 0) {
+            /* set the title to the group chosen */
+            mTitle = group_names[position];
+            /* make sure update is seen */
+            if(getActionBar() != null) {
+                getActionBar().setTitle(mTitle);
+            } else {
+                Log.d(TAG, "Action bar is null. Debug!");
+            }
+
             try {
                 new Request(
                         ParseFacebookUtils.getSession(),
@@ -94,11 +116,13 @@ public class ShakeMainActivity extends FragmentActivity
                         HttpMethod.GET,
                         new Request.Callback() {
                             public void onCompleted(Response response) {
+
                                 /* handle the result */
                                 parse_user = ParseUser.getCurrentUser();
                                 try
                                 {
 
+                                    /* this area is just parsing the api's result */
                                     ArrayList<String> ids = new ArrayList<String>();
                                     JSONObject json = response.getGraphObject().getInnerJSONObject();
                                     JSONArray j_array = json.getJSONArray("data");
@@ -171,34 +195,7 @@ public class ShakeMainActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void saveSession(Session session) {
-        this.session = session;
-
-        getGroupData(session);
-    }
-
-    /*
-        A method that is intended to be called from a fragment, to get the
-        array of group names
-     */
-    @Override
-    public String[] getGroupNames() {
-
-        String[] group_names = new String[groups.size()];
-        for (int i = 0; i < groups.size(); i++) {
-            try {
-                group_names[i] = groups.get(i).getString("name");
-
-            } catch(JSONException e) {
-                Log.v("ShakeMainActivity", "Bad Json Call");
-            }
-        }
-
-
-        return group_names;
-    }
-
+    /* request data from facebook about the users groups */
     private void getGroupData(Session ses) {
         /* get data for the groups and store the results */
         new Request(
@@ -226,7 +223,7 @@ public class ShakeMainActivity extends FragmentActivity
                             parse_user.put("group_ids", new JSONArray(ids));
                             parse_user.saveInBackground();
 
-                            mNavigationDrawerFragment.updateGroups(getGroupNames());
+                            mNavigationDrawerFragment.updateNavDrawerFBGroups(getStringsOfGroupNames());
 
                         } catch (JSONException e) {
                             Log.d("NavDrawerFrag", "Bad json key for json array.");
@@ -259,5 +256,21 @@ public class ShakeMainActivity extends FragmentActivity
         ).executeAsync();
     }
 
+    /*
+        A method that is intended to be called from a fragment, to get the
+        array of group names
+    */
+    private String[] getStringsOfGroupNames() {
+        group_names = new String[groups.size()];
+        for (int i = 0; i < groups.size(); i++) {
+            try {
+                group_names[i] = groups.get(i).getString("name");
+
+            } catch(JSONException e) {
+                Log.v("ShakeMainActivity", "Bad Json Call");
+            }
+        }
+        return group_names;
+    }
 
 }

@@ -30,7 +30,6 @@ public class ShakeMainFragment extends Fragment {
     private Session.StatusCallback statusCallback =
             new SessionStatusCallback();
     private ParseUser mUser;
-    private ShakeCommunicator shakeCommunicator;
 
 
     private static final String TAG = "LoginFragment";
@@ -58,26 +57,6 @@ public class ShakeMainFragment extends Fragment {
         if (state.isOpened()) {
             Log.i(TAG, "Logged in...");
 
-            shakeCommunicator.saveSession(session);
-
-            ParseFacebookUtils.logIn(getActivity(), new LogInCallback() {
-                @Override
-                public void done(final ParseUser parseUser, ParseException e) {
-                    Log.d("MyApp", "Initiating parse main_fragment.");
-                    
-                    if (!ParseFacebookUtils.isLinked((parseUser))) {
-                        Log.d("MyApp", "Not facebook linked...");
-                        ParseFacebookUtils.link(parseUser, getActivity(), new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (ParseFacebookUtils.isLinked(parseUser)) {
-                                    Log.d("MyApp", "Woohoo, user logged in with Facebook!");
-                                }
-                            }
-                        });
-                    }
-                }
-            });
 
         } else if (state.isClosed()) {
             Log.i(TAG, "Logged out...");
@@ -114,13 +93,6 @@ public class ShakeMainFragment extends Fragment {
         ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
         uiHelper.onActivityResult(requestCode, resultCode, data);
     }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        shakeCommunicator = (ShakeCommunicator) getActivity();
-    }
-
 
     @Override
     public void onPause() {

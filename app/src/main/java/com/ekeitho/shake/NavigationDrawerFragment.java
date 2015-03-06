@@ -57,8 +57,6 @@ public class NavigationDrawerFragment extends Fragment {
      */
     private ActionBarDrawerToggle mDrawerToggle;
 
-    private ShakeCommunicator shakeCommunicator;
-
     private String[] group_names;
 
     private ArrayAdapter<String> adapter;
@@ -117,18 +115,6 @@ public class NavigationDrawerFragment extends Fragment {
             }
         });
 
-
-        group_names = shakeCommunicator.getGroupNames();
-
-        adapter = new ArrayAdapter<String>(
-                getActionBar().getThemedContext(),
-                android.R.layout.simple_list_item_activated_1,
-                android.R.id.text1,
-                group_names
-        );
-
-        mDrawerListView.setAdapter(adapter);
-
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
     }
@@ -136,7 +122,7 @@ public class NavigationDrawerFragment extends Fragment {
     /*
         Whenever the user logs in, this will update their groups tab.
      */
-    public void updateGroups(String[] arr) {
+    public void updateNavDrawerFBGroups(String[] arr) {
         group_names = arr;
 
         adapter = new ArrayAdapter<String>(
@@ -245,7 +231,6 @@ public class NavigationDrawerFragment extends Fragment {
         super.onAttach(activity);
         try {
             mCallbacks = (NavigationDrawerCallbacks) activity;
-            shakeCommunicator = (ShakeCommunicator) getActivity();
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
         }

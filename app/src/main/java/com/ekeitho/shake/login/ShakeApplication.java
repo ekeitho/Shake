@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.ekeitho.shake.R;
 import com.parse.Parse;
+import com.parse.ParseFacebookUtils;
 
 public class ShakeApplication extends Application {
 
@@ -17,6 +18,8 @@ public class ShakeApplication extends Application {
         // Required - Initialize the Parse SDK
         Parse.initialize(this, getString(R.string.parse_app_id),
                 getString(R.string.parse_client_key));
+
+        ParseFacebookUtils.initialize(getString(R.string.parse_app_id));
 
         Parse.setLogLevel(Parse.LOG_LEVEL_DEBUG);
 
