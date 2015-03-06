@@ -51,10 +51,7 @@ public class LoginFragment extends Fragment {
                              ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.login, container, false);
-        LoginButton authButton = (LoginButton) view.findViewById(R.id.authButton);
-        authButton.setReadPermissions(Arrays.asList(
-                    "user_location", "user_birthday", "user_likes", "user_groups"));
-        authButton.setFragment(this);
+
 
         return view;
     }

@@ -3,6 +3,7 @@ package com.ekeitho.shake;
 
 import android.app.Activity;
 import android.app.ActionBar;
+import android.content.Intent;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
@@ -22,6 +23,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.ekeitho.shake.login.ShakeLoginActivity;
+import com.ekeitho.shake.login.ShakeLoginDispatachActivity;
+import com.parse.ParseUser;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -276,14 +281,33 @@ public class NavigationDrawerFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    /*
+        This is where the menu option is for things like logout.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
 
-        if (item.getItemId() == R.id.action_example) {
-            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
+        /*
+            In Main Activity there is a logout button on the top right.
+            This is what happens when that button is clicked
+         */
+        if (item.getItemId() == R.id.shake_logout) {
+            /* log the users out */
+            ParseUser.logOut();
+
+            /* announce */
+            Toast.makeText(getActivity(), "Logged out.", Toast.LENGTH_SHORT).show();
+
+            /* reset back to login screen */
+            Intent intent = new Intent(getActivity(),
+                    ShakeLoginDispatachActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+
             return true;
         }
 
