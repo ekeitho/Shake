@@ -114,14 +114,13 @@ public class ShakeMainActivity extends FragmentActivity
                 Log.d(TAG, "Action bar is null. Debug!");
             }
 
-            /* communicate with the fragment on clicks */
-            friendsMapAreaFragment.communicate(mTitle.toString());
 
-
+            /* based on which group was clicked, get the ids of that group from fb */
             try {
+                final String groupId = groups.get(position).getString("id");
                 new Request(
                         ParseFacebookUtils.getSession(),
-                        "/" + groups.get(position).getString("id") + "/members",
+                        "/" + groupId + "/members",
                         null,
                         HttpMethod.GET,
                         new Request.Callback() {
@@ -142,16 +141,10 @@ public class ShakeMainActivity extends FragmentActivity
                                         ids.add(obj.getString("id"));
                                     }
 
-                                    ParseQuery<ParseUser> parseQuery = ParseQuery.getQuery(ParseUser.class);
-                                    parseQuery.whereContainedIn("fbid", ids);
-                                    parseQuery.findInBackground(new FindCallback<ParseUser>() {
-                                        @Override
-                                        public void done(List<ParseUser> parseUsers, ParseException e) {
-                                            /* if the size of the parseUsers is greater then one
-                                                then we have successfull tracked someone from the group
-                                             */
-                                        }
-                                    });
+                                    /* communicate the group name and all associated ids
+                                        to the map area fragment to update peoples mark */
+                                    friendsMapAreaFragment.communicate(mTitle.toString(),
+                                            groupId, ids);
 
                                 } catch (JSONException e) {
                                     Log.d("NavDrawerFrag", "Bad json key for json array.");
