@@ -80,7 +80,7 @@ public class ShakeMainActivity extends FragmentActivity
 
         if( position == 0) {
             fragmentManager.beginTransaction()
-                    .replace(R.id.container,  new LoginFragment())
+                    .replace(R.id.container,  new ShakeMainFragment())
                     .addToBackStack(null).commit();
         }
 

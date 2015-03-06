@@ -22,7 +22,7 @@ import com.parse.SaveCallback;
 /**
  * Created by ekeitho on 2/18/15.
  */
-public class LoginFragment extends Fragment {
+public class ShakeMainFragment extends Fragment {
 
     /* facebook life cycle helper - listeners on changes of the ui */
     private UiLifecycleHelper uiHelper;
