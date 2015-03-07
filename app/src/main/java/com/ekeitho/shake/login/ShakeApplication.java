@@ -19,7 +19,7 @@ public class ShakeApplication extends Application {
         Parse.initialize(this, getString(R.string.parse_app_id),
                 getString(R.string.parse_client_key));
 
-        ParseFacebookUtils.initialize(getString(R.string.parse_app_id));
+        ParseFacebookUtils.initialize(getString(R.string.facebook_app_id));
 
         Parse.setLogLevel(Parse.LOG_LEVEL_DEBUG);
 
