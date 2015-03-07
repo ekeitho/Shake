@@ -24,9 +24,9 @@
     <string name="profile_login_button_label">Log in</string>
 
     <string-array name="my_facebook_permissions">
-        <item>public_profile</item>
-        <item>user_friends</item>
         <item>user_groups</item>
+        <item>user_location</item>
+        <item>user_likes</item>
     </string-array>
 
 </resources>

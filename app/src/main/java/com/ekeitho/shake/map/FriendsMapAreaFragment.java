@@ -92,7 +92,7 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
                                              */
                 for(ParseUser user : parseUsers) {
                     if(user.getUsername() != parse_user.getUsername()) {
-                        addPersonToMap(user.getParseGeoPoint("location"), user.getUsername());
+                        addPersonToMap(user.getParseGeoPoint("location"), user.getString("name"));
                     }
                 }
             }
