@@ -60,7 +60,6 @@ public class ShakeMainFragment extends Fragment {
 
         } else if (state.isClosed()) {
             Log.i(TAG, "Logged out...");
-            userInfoTextView.setVisibility(View.INVISIBLE);
         }
     }
 
