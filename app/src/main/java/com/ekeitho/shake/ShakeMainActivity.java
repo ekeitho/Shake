@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -223,7 +224,7 @@ public class ShakeMainActivity extends FragmentActivity
                                 ids[i] = obj.getString("id");
                             }
 
-                            parse_user.put("group_ids", new JSONArray(ids));
+                            parse_user.put("group_ids", Arrays.toString(ids));
                             parse_user.saveInBackground();
 
                             mNavigationDrawerFragment.updateNavDrawerFBGroups(getStringsOfGroupNames());
