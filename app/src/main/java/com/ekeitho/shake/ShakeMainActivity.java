@@ -216,15 +216,15 @@ public class ShakeMainActivity extends FragmentActivity
                         {
                             JSONObject json = response.getGraphObject().getInnerJSONObject();
                             JSONArray j_array = json.getJSONArray("data");
-                            String[] ids = new String[j_array.length()];
+                            JSONArray ids = new JSONArray();
 
                             for (int i = 0; i < j_array.length(); i++) {
                                 JSONObject obj = j_array.getJSONObject(i);
                                 groups.add(obj);
-                                ids[i] = obj.getString("id");
+                                ids.put(obj.getString("id"));
                             }
 
-                            parse_user.put("group_ids", Arrays.toString(ids));
+                            parse_user.put("group_ids", ids);
                             parse_user.saveInBackground();
 
                             mNavigationDrawerFragment.updateNavDrawerFBGroups(getStringsOfGroupNames());

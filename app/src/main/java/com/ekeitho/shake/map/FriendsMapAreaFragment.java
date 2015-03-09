@@ -87,9 +87,9 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
         parseQuery.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> parseUsers, ParseException e) {
-                                            /* if the size of the parseUsers is greater then one
-                                                then we have successfull tracked someone from the group
-                                             */
+                /* if the size of the parseUsers is greater then one
+                    then we have successfully tracked someone from the group
+                 */
                 for(ParseUser user : parseUsers) {
                     if(user.getUsername() != parse_user.getUsername()) {
                         addPersonToMap(user.getParseGeoPoint("location"), user.getString("name"));
