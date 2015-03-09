@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.FrameLayout;
 
 
 import com.ekeitho.shake.map.FriendsMapAreaFragment;
@@ -101,7 +102,7 @@ public class ShakeMainActivity extends FragmentActivity
             load_flag = 1;
             fragmentManager.beginTransaction()
                     .replace(R.id.container,  new ShakeMainFragment())
-                    .addToBackStack(null).commit();
+                    .commit();
         }
 
 
@@ -216,15 +217,15 @@ public class ShakeMainActivity extends FragmentActivity
                         {
                             JSONObject json = response.getGraphObject().getInnerJSONObject();
                             JSONArray j_array = json.getJSONArray("data");
-                            String[] ids = new String[j_array.length()];
+                            JSONArray ids = new JSONArray();
 
                             for (int i = 0; i < j_array.length(); i++) {
                                 JSONObject obj = j_array.getJSONObject(i);
                                 groups.add(obj);
-                                ids[i] = obj.getString("id");
+                                ids.put(obj.getString("id"));
                             }
 
-                            parse_user.put("group_ids", Arrays.toString(ids));
+                            parse_user.put("group_ids", ids);
                             parse_user.saveInBackground();
 
                             mNavigationDrawerFragment.updateNavDrawerFBGroups(getStringsOfGroupNames());
@@ -280,5 +281,14 @@ public class ShakeMainActivity extends FragmentActivity
     @Override
     public void receiveMapFragment(FriendsMapAreaFragment friendsMapAreaFragment) {
       this.friendsMapAreaFragment = friendsMapAreaFragment;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mNavigationDrawerFragment.isDrawerOpen()) {
+            mNavigationDrawerFragment.closeDrawer();
+        } else {
+            super.onBackPressed();
+        }
     }
 }
