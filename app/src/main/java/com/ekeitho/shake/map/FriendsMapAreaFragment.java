@@ -60,6 +60,19 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
     }
 
+    /*
+        Returns the last known location of the user.
+     */
+    public Location getLastLocation() {
+        return mLastLocation;
+    }
+
+    /*
+        Removes all markers, polylines, polygons, overlays, etc from the map.
+     */
+    public void clearMap() {
+        googleMap.clear();
+    }
 
     /*
         this method is how the main activity is passing values to this fragment.
@@ -90,7 +103,7 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
                     then we have successfully tracked someone from the group
                  */
                 for(ParseUser user : parseUsers) {
-                    if(user.getUsername() != parse_user.getUsername()) {
+                    if(user.getUsername() != parse_user.getUsername() && (boolean)(user.get("hidden")) == false) {
                         addPersonToMap(user.getParseGeoPoint("location"), user.getString("name"));
                     }
                 }

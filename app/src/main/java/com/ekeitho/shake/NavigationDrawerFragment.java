@@ -135,9 +135,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-        if (position > -1) {
-            updateActiveGroupPosition(position);
-        }
+        updateActiveGroupPosition(position);
     }
 
     public boolean isDrawerOpen() {
@@ -224,7 +222,7 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    private void updateActiveGroupPosition(int position) {
+    public void updateActiveGroupPosition(int position) {
         mCurrentSelectedPosition = position;
         if (mDrawerListView != null) {
             mDrawerListView.setItemChecked(position, true);
