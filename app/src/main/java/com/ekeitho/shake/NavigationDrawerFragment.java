@@ -65,10 +65,11 @@ public class NavigationDrawerFragment extends Fragment {
     private ListView mDrawerListView;
     private View mFragmentContainerView;
 
-    private int mCurrentSelectedPosition = 0;
+    private int mCurrentSelectedPosition;
     private boolean mFromSavedInstanceState;
     private boolean mUserLearnedDrawer;
 
+    private ParseUser parse_user = ParseUser.getCurrentUser();
 
     public NavigationDrawerFragment() {
 
@@ -122,7 +123,7 @@ public class NavigationDrawerFragment extends Fragment {
     /*
         Whenever the user logs in, this will update their groups tab.
      */
-    public void updateNavDrawerFBGroups(String[] arr) {
+    public void updateNavDrawerFBGroups(String[] arr, int position) {
         group_names = arr;
 
         adapter = new ArrayAdapter<String>(
@@ -133,6 +134,10 @@ public class NavigationDrawerFragment extends Fragment {
         );
         mDrawerListView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
+
+        if (position > -1) {
+            updateActiveGroupPosition(position);
+        }
     }
 
     public boolean isDrawerOpen() {
@@ -217,6 +222,16 @@ public class NavigationDrawerFragment extends Fragment {
         });
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    private void updateActiveGroupPosition(int position) {
+        mCurrentSelectedPosition = position;
+        if (mDrawerListView != null) {
+            mDrawerListView.setItemChecked(position, true);
+        }
+        if (mCallbacks != null) {
+            mCallbacks.onNavigationDrawerUpdateActiveGroupName(position);
+        }
     }
 
     private void selectItem(int position) {
@@ -313,7 +328,6 @@ public class NavigationDrawerFragment extends Fragment {
         ActionBar actionBar = getActionBar();
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setTitle(R.string.app_name);
     }
 
     private ActionBar getActionBar() {
@@ -328,5 +342,10 @@ public class NavigationDrawerFragment extends Fragment {
          * Called when an item in the navigation drawer is selected.
          */
         void onNavigationDrawerItemSelected(int position);
+
+        /**
+         * Called when pulling the active group and selecting it in the drawer
+         */
+        void onNavigationDrawerUpdateActiveGroupName(int position);
     }
 }
