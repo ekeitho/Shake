@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v4.widget.DrawerLayout;
+import android.widget.FrameLayout;
 
 
 import com.ekeitho.shake.map.FriendsMapAreaFragment;
@@ -18,6 +19,7 @@ import com.facebook.Session;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -26,6 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -66,9 +69,7 @@ public class ShakeMainActivity extends FragmentActivity
 
     private int load_flag = 0;
 
-
-    ParseUser parse_user;
-
+    private ParseUser parse_user;
 
 
     @Override
@@ -88,7 +89,31 @@ public class ShakeMainActivity extends FragmentActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+    }
 
+    @Override
+    public void onNavigationDrawerUpdateActiveGroupName(int position) {
+        if (position > -1) {
+            /* set the title to the group chosen */
+            mTitle = group_names[position];
+            /* hide user */
+            parse_user.put("hidden", false);
+        } else {
+            /* default title */
+            mTitle = "Groups";
+            if (friendsMapAreaFragment != null) {
+                friendsMapAreaFragment.clearMap();
+            }
+            /* unhide user */
+            parse_user.put("hidden", true);
+        }
+        parse_user.saveInBackground();
+        /* make sure update is seen */
+        if (getActionBar() != null) {
+            getActionBar().setTitle(mTitle);
+        } else {
+            Log.d(TAG, "Action bar is null. Debug!");
+        }
     }
 
     @Override
@@ -100,20 +125,11 @@ public class ShakeMainActivity extends FragmentActivity
             load_flag = 1;
             fragmentManager.beginTransaction()
                     .replace(R.id.container,  new ShakeMainFragment())
-                    .addToBackStack(null).commit();
+                    .commit();
         }
 
-
         if (groups != null && groups.size() != 0) {
-            /* set the title to the group chosen */
-            mTitle = group_names[position];
-            /* make sure update is seen */
-            if(getActionBar() != null) {
-                getActionBar().setTitle(mTitle);
-            } else {
-                Log.d(TAG, "Action bar is null. Debug!");
-            }
-
+            onNavigationDrawerUpdateActiveGroupName(position);
 
             /* based on which group was clicked, get the ids of that group from fb */
             try {
@@ -130,26 +146,28 @@ public class ShakeMainActivity extends FragmentActivity
                                 parse_user = ParseUser.getCurrentUser();
                                 try
                                 {
-
                                     /* this area is just parsing the api's result */
-                                    ArrayList<String> ids = new ArrayList<String>();
+                                    ArrayList<String> member_ids = new ArrayList<String>();
                                     JSONObject json = response.getGraphObject().getInnerJSONObject();
                                     JSONArray j_array = json.getJSONArray("data");
 
                                     for (int i = 0; i < j_array.length(); i++) {
                                         JSONObject obj = j_array.getJSONObject(i);
-                                        ids.add(obj.getString("id"));
+                                        member_ids.add(obj.getString("id"));
                                     }
 
-                                    /* communicate the group name and all associated ids
+                                    /* communicate the group name and all associated member_ids
                                         to the map area fragment to update peoples mark */
                                     friendsMapAreaFragment.communicate(mTitle.toString(),
-                                            groupId, ids);
+                                            groupId, member_ids);
 
                                 } catch (JSONException e) {
                                     Log.d("NavDrawerFrag", "Bad json key for json array.");
                                 }
-
+                                parse_user.put("location", new ParseGeoPoint(friendsMapAreaFragment.getLastLocation().getLatitude(),
+                                        friendsMapAreaFragment.getLastLocation().getLongitude()));
+                                parse_user.put("active_group", groupId);
+                                parse_user.saveInBackground();
 
                                 System.out.println(response);
 
@@ -192,6 +210,10 @@ public class ShakeMainActivity extends FragmentActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            parse_user.remove("active_group");
+            parse_user.saveInBackground();
+            mNavigationDrawerFragment.updateActiveGroupPosition(-1);
+
             return true;
         }
 
@@ -210,23 +232,29 @@ public class ShakeMainActivity extends FragmentActivity
                     public void onCompleted(Response response) {
                         /* handle the result */
                         parse_user = ParseUser.getCurrentUser();
+                        String active_group = parse_user.getString("active_group");
+                        int position = -1;
 
                         try
                         {
                             JSONObject json = response.getGraphObject().getInnerJSONObject();
                             JSONArray j_array = json.getJSONArray("data");
-                            String[] ids = new String[j_array.length()];
+                            JSONArray group_ids = new JSONArray();
 
                             for (int i = 0; i < j_array.length(); i++) {
                                 JSONObject obj = j_array.getJSONObject(i);
                                 groups.add(obj);
-                                ids[i] = obj.getString("id");
+                                String group_id = obj.getString("id");
+                                group_ids.put(group_id);
+                                if (active_group != null && active_group.equals(group_id)) {
+                                    position = i;
+                                }
                             }
 
-                            parse_user.put("group_ids", new JSONArray(ids));
+                            parse_user.put("group_ids", group_ids);
                             parse_user.saveInBackground();
-
-                            mNavigationDrawerFragment.updateNavDrawerFBGroups(getStringsOfGroupNames());
+                            Log.d("drawer_position", ""+position);
+                            mNavigationDrawerFragment.updateNavDrawerFBGroups(getStringsOfGroupNames(), position);
 
                         } catch (JSONException e) {
                             Log.d("NavDrawerFrag", "Bad json key for json array.");
@@ -279,5 +307,14 @@ public class ShakeMainActivity extends FragmentActivity
     @Override
     public void receiveMapFragment(FriendsMapAreaFragment friendsMapAreaFragment) {
       this.friendsMapAreaFragment = friendsMapAreaFragment;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mNavigationDrawerFragment.isDrawerOpen()) {
+            mNavigationDrawerFragment.closeDrawer();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

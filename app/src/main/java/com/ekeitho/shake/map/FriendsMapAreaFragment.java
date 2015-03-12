@@ -55,18 +55,30 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
         shakeMapCommunicator.receiveMapFragment(this);
 
         googleMap.clear();
-        googleMap.addMarker(new MarkerOptions()
-                .position(loc)
-                .title("Me!"));
+        googleMap.setMyLocationEnabled(true);
+        communicate(null, parse_user.getString("active_group"), null);
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
     }
 
+    /*
+        Returns the last known location of the user.
+     */
+    public Location getLastLocation() {
+        return mLastLocation;
+    }
+
+    /*
+        Removes all markers, polylines, polygons, overlays, etc from the map.
+     */
+    public void clearMap() {
+        googleMap.clear();
+    }
 
     /*
         this method is how the main activity is passing values to this fragment.
         Depending on whats being passed in, will vary our queries;
      */
-    public void communicate(String groupName, String groupId, ArrayList<String> ids) {
+    public void communicate(String groupName, String groupId, ArrayList<String> member_ids) {
 
         /*
             if there are grouped markers and the user decided to chose another group
@@ -87,11 +99,11 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
         parseQuery.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> parseUsers, ParseException e) {
-                                            /* if the size of the parseUsers is greater then one
-                                                then we have successfull tracked someone from the group
-                                             */
+                /* if the size of the parseUsers is greater then one
+                    then we have successfully tracked someone from the group
+                 */
                 for(ParseUser user : parseUsers) {
-                    if(user.getUsername() != parse_user.getUsername()) {
+                    if(user.getUsername() != parse_user.getUsername() && (boolean)(user.get("hidden")) == false) {
                         addPersonToMap(user.getParseGeoPoint("location"), user.getString("name"));
                     }
                 }
