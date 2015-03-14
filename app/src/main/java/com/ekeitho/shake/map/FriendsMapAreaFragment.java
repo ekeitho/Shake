@@ -9,9 +9,11 @@ import com.ekeitho.shake.ShakeMapCommunicator;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FindCallback;
@@ -73,30 +75,20 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
         in a cleaner way, rather than having to keep zooming in and out
         to find your friends.
      */
-    public static void findMidPoint(ArrayList<ParseGeoPoint> geoPoints){
+    public void findMidPoint(){
 
-        ArrayList<Double> group_x = new ArrayList<>();
-        ArrayList<Double> group_y = new ArrayList<>();
-        ArrayList<Double> group_z = new ArrayList<>();
-
-        double sum_x = 0.0;
-        double sum_y = 0.0;
-        double sum_z = 0.0;
-
-
-
-        for(ParseGeoPoint points : geoPoints) {
-            double lat = Math.toRadians(points.getLatitude());
-            double lon = Math.toRadians(points.getLongitude());
-
-            double x1 = Math.cos(lat) * Math.cos(lon);
-            double y1 = Math.cos(lat) * Math.sin(lon);
-            double z1 = Math.sin(lat);
-
-            sum_x += x1;
-            sum_y += y1;
-            sum_z += z1;
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        for (Marker marker : grouped_markers) {
+            builder.include(marker.getPosition());
         }
+        /* add yourself to the midpoint calculation */
+        builder.include(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+        LatLngBounds bounds = builder.build();
+
+        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 100);
+
+        googleMap.moveCamera(cu);
+        googleMap.animateCamera(cu);
 
     }
 
@@ -149,6 +141,11 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
                     }
                 }
 
+                /* add yourself to the points as well */
+                geoPoints.add(new ParseGeoPoint(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+                /* find the midpoint between everyone and focus out */
+                findMidPoint();
+
             }
         });
 
@@ -163,6 +160,7 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
         Marker marker = googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()))
                 .title(friendsName));
+
 
         grouped_markers.add(marker);
     }
