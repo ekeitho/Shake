@@ -21,6 +21,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -68,6 +69,38 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
     }
 
     /*
+        Finds the mid point of all found users to focus the map
+        in a cleaner way, rather than having to keep zooming in and out
+        to find your friends.
+     */
+    public static void findMidPoint(ArrayList<ParseGeoPoint> geoPoints){
+
+        ArrayList<Double> group_x = new ArrayList<>();
+        ArrayList<Double> group_y = new ArrayList<>();
+        ArrayList<Double> group_z = new ArrayList<>();
+
+        double sum_x = 0.0;
+        double sum_y = 0.0;
+        double sum_z = 0.0;
+
+
+
+        for(ParseGeoPoint points : geoPoints) {
+            double lat = Math.toRadians(points.getLatitude());
+            double lon = Math.toRadians(points.getLongitude());
+
+            double x1 = Math.cos(lat) * Math.cos(lon);
+            double y1 = Math.cos(lat) * Math.sin(lon);
+            double z1 = Math.sin(lat);
+
+            sum_x += x1;
+            sum_y += y1;
+            sum_z += z1;
+        }
+
+    }
+
+    /*
         Removes all markers, polylines, polygons, overlays, etc from the map.
      */
     public void clearMap() {
@@ -90,6 +123,9 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
             }
         }
 
+        /*
+            Initialize the parse query class - similar to SQL words if it helps.
+         */
         ParseQuery<ParseUser> parseQuery = ParseQuery.getQuery(ParseUser.class);
         /*
             if your friends have signed up through our app and they are a part
@@ -99,14 +135,20 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
         parseQuery.findInBackground(new FindCallback<ParseUser>() {
             @Override
             public void done(List<ParseUser> parseUsers, ParseException e) {
+                ArrayList<ParseGeoPoint> geoPoints = new ArrayList<ParseGeoPoint>();
+
                 /* if the size of the parseUsers is greater then one
                     then we have successfully tracked someone from the group
                  */
                 for(ParseUser user : parseUsers) {
-                    if(user.getUsername() != parse_user.getUsername() && (boolean)(user.get("hidden")) == false) {
+                    if(user.getUsername() != parse_user.getUsername() && !user.getBoolean("hidden")) {
+                        // store geo points in order to find midpoint later
+                        geoPoints.add(user.getParseGeoPoint("location"));
+                        // add the person the the map as they are found
                         addPersonToMap(user.getParseGeoPoint("location"), user.getString("name"));
                     }
                 }
+
             }
         });
 
