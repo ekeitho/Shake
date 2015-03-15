@@ -74,6 +74,8 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
         Finds the mid point of all found users to focus the map
         in a cleaner way, rather than having to keep zooming in and out
         to find your friends.
+
+        TODO: Make that it can only show a 50 miles radius?
      */
     public void findMidPoint(){
 
