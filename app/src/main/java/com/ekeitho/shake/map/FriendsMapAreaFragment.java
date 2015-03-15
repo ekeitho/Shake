@@ -103,7 +103,7 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
                     then we have successfully tracked someone from the group
                  */
                 for(ParseUser user : parseUsers) {
-                    if(user.getUsername() != parse_user.getUsername() && (boolean)(user.get("hidden")) == false) {
+                    if(user.getUsername() != parse_user.getUsername() && /*(boolean)*/(user.get("hidden")) == false) {
                         addPersonToMap(user.getParseGeoPoint("location"), user.getString("name"));
                     }
                 }
