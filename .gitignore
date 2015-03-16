@@ -32,3 +32,6 @@ proguard/
 # Android Studio IDEA file
 .idea/
 *.iml
+
+# Extra
+*.DS_Store
