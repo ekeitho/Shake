@@ -20,8 +20,11 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,6 +80,7 @@ public class ShakeMainActivity extends FragmentActivity
     private int load_flag = 0;
 
     private ParseUser parse_user;
+    private ParseInstallation parse_installation;
 
     /**
      * Sensor manager
@@ -123,6 +127,10 @@ public class ShakeMainActivity extends FragmentActivity
         mAccel = 0.00f;
         mAccelCurrent = SensorManager.GRAVITY_EARTH;
         mAccelLast = SensorManager.GRAVITY_EARTH;
+
+        parse_installation = ParseInstallation.getCurrentInstallation();
+        parse_installation.put("user", ParseUser.getCurrentUser());
+        parse_installation.saveInBackground();
     }
 
     @Override
@@ -204,7 +212,6 @@ public class ShakeMainActivity extends FragmentActivity
                                 parse_user.saveInBackground();
 
                                 System.out.println(response);
-
                             }
                         }
                 ).executeAsync();
@@ -362,9 +369,10 @@ public class ShakeMainActivity extends FragmentActivity
             float delta = mAccelCurrent - mAccelLast;
             mAccel = mAccel * 0.9f + delta; // perform low-cut filter
 
-            if (mAccel > 13) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Device has shaken.", Toast.LENGTH_SHORT);
+            if (mAccel > 13 && !parse_user.getString("active_group").isEmpty()) {
+                Toast toast = Toast.makeText(getApplicationContext(), "Request sent to group.", Toast.LENGTH_SHORT);
                 toast.show();
+                sendShakeNotification();
             }
         }
 
@@ -372,6 +380,20 @@ public class ShakeMainActivity extends FragmentActivity
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
         }
     };
+
+    private void sendShakeNotification() {
+        ParseQuery userQuery = ParseUser.getQuery();
+        userQuery.whereEqualTo("active_group", parse_user.getString("active_group"));
+        userQuery.whereNotEqualTo("username", parse_user.getUsername());
+
+        ParseQuery pushQuery = ParseInstallation.getQuery();
+        pushQuery.whereMatchesQuery("user", userQuery);
+
+        ParsePush push = new ParsePush();
+        push.setQuery(pushQuery);
+        push.setMessage(parse_user.getString("name") + " requests your location.");
+        push.sendInBackground();
+    }
 
     @Override
     protected void onResume() {
