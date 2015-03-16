@@ -79,18 +79,25 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
      */
     public void findMidPoint(){
 
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (Marker marker : grouped_markers) {
-            builder.include(marker.getPosition());
+        System.out.println("size " + grouped_markers.size());
+        if(grouped_markers.size() == 0) {
+            LatLng loc = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
         }
+        else {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (Marker marker : grouped_markers) {
+                builder.include(marker.getPosition());
+            }
         /* add yourself to the midpoint calculation */
-        builder.include(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
-        LatLngBounds bounds = builder.build();
+            builder.include(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+            LatLngBounds bounds = builder.build();
 
-        CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 100);
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 100);
 
-        googleMap.moveCamera(cu);
-        googleMap.animateCamera(cu);
+            googleMap.moveCamera(cu);
+            googleMap.animateCamera(cu);
+        }
 
     }
 
@@ -115,6 +122,7 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
             for(Marker marker : grouped_markers) {
                 marker.remove();
             }
+            grouped_markers.clear();
         }
 
         /*
