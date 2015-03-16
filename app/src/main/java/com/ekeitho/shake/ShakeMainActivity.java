@@ -31,6 +31,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+
+import android.widget.Toast;
+
 
 public class ShakeMainActivity extends FragmentActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks, ShakeMapCommunicator {
@@ -71,6 +78,26 @@ public class ShakeMainActivity extends FragmentActivity
 
     private ParseUser parse_user;
 
+    /**
+     * Sensor manager
+     */
+    private SensorManager mSensorManager;
+
+    /**
+     * Acceleration apart from gravity
+     */
+    private float mAccel;
+
+    /**
+     * Current acceleration including gravity
+     */
+    private float mAccelCurrent;
+
+    /**
+     * Last acceleration including gravity
+     */
+    private float mAccelLast;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +116,13 @@ public class ShakeMainActivity extends FragmentActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        // Set up sensor.
+        mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
+        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+        mAccel = 0.00f;
+        mAccelCurrent = SensorManager.GRAVITY_EARTH;
+        mAccelLast = SensorManager.GRAVITY_EARTH;
     }
 
     @Override
@@ -316,5 +350,38 @@ public class ShakeMainActivity extends FragmentActivity
         } else {
             super.onBackPressed();
         }
+    }
+    private final SensorEventListener mSensorListener = new SensorEventListener() {
+        @Override
+        public void onSensorChanged(SensorEvent event) {
+            float x = event.values[0];
+            float y = event.values[1];
+            float z = event.values[2];
+            mAccelLast = mAccelCurrent;
+            mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
+            float delta = mAccelCurrent - mAccelLast;
+            mAccel = mAccel * 0.9f + delta; // perform low-cut filter
+
+            if (mAccel > 13) {
+                Toast toast = Toast.makeText(getApplicationContext(), "Device has shaken.", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        mSensorManager.unregisterListener(mSensorListener);
+        super.onPause();
     }
 }
