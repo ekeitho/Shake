@@ -32,6 +32,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import android.hardware.Sensor;
@@ -102,6 +104,15 @@ public class ShakeMainActivity extends FragmentActivity
      */
     private float mAccelLast;
 
+    /**
+     * Last date time stamp
+     */
+    private Date mLastDate = new Date();
+
+    /**
+     * Position in group list
+     */
+    private int mPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +147,7 @@ public class ShakeMainActivity extends FragmentActivity
     @Override
     public void onNavigationDrawerUpdateActiveGroupName(int position) {
         if (position > -1) {
+            mPosition = position;
             /* set the title to the group chosen */
             mTitle = group_names[position];
             /* hide user */
@@ -369,10 +381,19 @@ public class ShakeMainActivity extends FragmentActivity
             float delta = mAccelCurrent - mAccelLast;
             mAccel = mAccel * 0.9f + delta; // perform low-cut filter
 
-            if (mAccel > 13 && !parse_user.getString("active_group").isEmpty()) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Request sent to group.", Toast.LENGTH_SHORT);
+            Calendar last = Calendar.getInstance();
+            Calendar now = Calendar.getInstance();
+            last.setTime(mLastDate);
+            now.setTime(new Date());
+
+            long diff = now.getTimeInMillis() - last.getTimeInMillis();
+
+            if (mAccel > 13 && diff >= 5000 && !parse_user.getString("active_group").isEmpty()) {
+                String message = "Request sent to " + group_names[mPosition];
+                Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
                 toast.show();
                 sendShakeNotification();
+                mLastDate = new Date();
             }
         }
 
