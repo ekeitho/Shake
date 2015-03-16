@@ -155,10 +155,10 @@ public class ShakeMainActivity extends FragmentActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        if( position == 0 && load_flag == 0) {
+        if (position == 0 && load_flag == 0) {
             load_flag = 1;
             fragmentManager.beginTransaction()
-                    .replace(R.id.container,  new ShakeMainFragment())
+                    .replace(R.id.container, new ShakeMainFragment())
                     .commit();
         }
 
@@ -178,8 +178,7 @@ public class ShakeMainActivity extends FragmentActivity
 
                                 /* handle the result */
                                 parse_user = ParseUser.getCurrentUser();
-                                try
-                                {
+                                try {
                                     /* this area is just parsing the api's result */
                                     ArrayList<String> member_ids = new ArrayList<String>();
                                     JSONObject json = response.getGraphObject().getInnerJSONObject();
@@ -269,8 +268,7 @@ public class ShakeMainActivity extends FragmentActivity
                         String active_group = parse_user.getString("active_group");
                         int position = -1;
 
-                        try
-                        {
+                        try {
                             JSONObject json = response.getGraphObject().getInnerJSONObject();
                             JSONArray j_array = json.getJSONArray("data");
                             JSONArray group_ids = new JSONArray();
@@ -287,7 +285,7 @@ public class ShakeMainActivity extends FragmentActivity
 
                             parse_user.put("group_ids", group_ids);
                             parse_user.saveInBackground();
-                            Log.d("drawer_position", ""+position);
+                            Log.d("drawer_position", "" + position);
                             mNavigationDrawerFragment.updateNavDrawerFBGroups(getStringsOfGroupNames(), position);
 
                         } catch (JSONException e) {
@@ -313,7 +311,7 @@ public class ShakeMainActivity extends FragmentActivity
                             parse_user.put("fbid",
                                     response.getGraphObject().getInnerJSONObject().getString("id"));
                             parse_user.saveInBackground();
-                        } catch(JSONException e) {
+                        } catch (JSONException e) {
 
                         }
                     }
@@ -331,7 +329,7 @@ public class ShakeMainActivity extends FragmentActivity
             try {
                 group_names[i] = groups.get(i).getString("name");
 
-            } catch(JSONException e) {
+            } catch (JSONException e) {
                 Log.v("ShakeMainActivity", "Bad Json Call");
             }
         }
@@ -340,7 +338,7 @@ public class ShakeMainActivity extends FragmentActivity
 
     @Override
     public void receiveMapFragment(FriendsMapAreaFragment friendsMapAreaFragment) {
-      this.friendsMapAreaFragment = friendsMapAreaFragment;
+        this.friendsMapAreaFragment = friendsMapAreaFragment;
     }
 
     @Override
@@ -351,6 +349,7 @@ public class ShakeMainActivity extends FragmentActivity
             super.onBackPressed();
         }
     }
+
     private final SensorEventListener mSensorListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent event) {
