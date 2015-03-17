@@ -396,7 +396,7 @@ public class ShakeMainActivity extends FragmentActivity
 
             long diff = now.getTimeInMillis() - last.getTimeInMillis();
 
-            if (mAccel >= 12 && diff >= 15000 && parse_user.getString("active_group") != null) {
+            if (mAccel >= 12 && diff >= 15000 && !parse_user.getBoolean("hidden")) {
                 String message = "Request sent to " + group_names[mPosition];
                 Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
                 toast.show();
