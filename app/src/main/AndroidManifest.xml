@@ -24,7 +24,7 @@
     <application
         android:name=".login.ShakeApplication"
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@mipmap/shake_logo"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
