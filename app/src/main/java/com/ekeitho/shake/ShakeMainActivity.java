@@ -20,8 +20,11 @@ import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseInstallation;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,6 +32,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import android.hardware.Sensor;
@@ -77,6 +82,7 @@ public class ShakeMainActivity extends FragmentActivity
     private int load_flag = 0;
 
     private ParseUser parse_user;
+    private ParseInstallation parse_installation;
 
     /**
      * Sensor manager
@@ -98,6 +104,15 @@ public class ShakeMainActivity extends FragmentActivity
      */
     private float mAccelLast;
 
+    /**
+     * Last date time stamp
+     */
+    private Date mLastDate = new Date();
+
+    /**
+     * Position in group list
+     */
+    private int mPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,11 +138,16 @@ public class ShakeMainActivity extends FragmentActivity
         mAccel = 0.00f;
         mAccelCurrent = SensorManager.GRAVITY_EARTH;
         mAccelLast = SensorManager.GRAVITY_EARTH;
+
+        parse_installation = ParseInstallation.getCurrentInstallation();
+        parse_installation.put("user", ParseUser.getCurrentUser());
+        parse_installation.saveInBackground();
     }
 
     @Override
     public void onNavigationDrawerUpdateActiveGroupName(int position) {
         if (position > -1) {
+            mPosition = position;
             /* set the title to the group chosen */
             mTitle = group_names[position];
             /* hide user */
@@ -203,7 +223,6 @@ public class ShakeMainActivity extends FragmentActivity
                                 parse_user.saveInBackground();
 
                                 System.out.println(response);
-
                             }
                         }
                 ).executeAsync();
@@ -361,9 +380,19 @@ public class ShakeMainActivity extends FragmentActivity
             float delta = mAccelCurrent - mAccelLast;
             mAccel = mAccel * 0.9f + delta; // perform low-cut filter
 
-            if (mAccel > 13) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Device has shaken.", Toast.LENGTH_SHORT);
+            Calendar last = Calendar.getInstance();
+            Calendar now = Calendar.getInstance();
+            last.setTime(mLastDate);
+            now.setTime(new Date());
+
+            long diff = now.getTimeInMillis() - last.getTimeInMillis();
+
+            if (mAccel > 13 && diff >= 5000 && !parse_user.getString("active_group").isEmpty()) {
+                String message = "Request sent to " + group_names[mPosition];
+                Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
                 toast.show();
+                sendShakeNotification();
+                mLastDate = new Date();
             }
         }
 
@@ -371,6 +400,20 @@ public class ShakeMainActivity extends FragmentActivity
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
         }
     };
+
+    private void sendShakeNotification() {
+        ParseQuery userQuery = ParseUser.getQuery();
+        userQuery.whereEqualTo("active_group", parse_user.getString("active_group"));
+        userQuery.whereNotEqualTo("username", parse_user.getUsername());
+
+        ParseQuery pushQuery = ParseInstallation.getQuery();
+        pushQuery.whereMatchesQuery("user", userQuery);
+
+        ParsePush push = new ParsePush();
+        push.setQuery(pushQuery);
+        push.setMessage(parse_user.getString("name") + " requests your location.");
+        push.sendInBackground();
+    }
 
     @Override
     protected void onResume() {
