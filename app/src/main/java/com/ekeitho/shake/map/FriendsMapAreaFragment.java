@@ -35,6 +35,7 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
 
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private ParseGeoPoint mLastGeoPoint;
     private GoogleMap googleMap;
     private ParseUser parse_user = ParseUser.getCurrentUser();
     private ShakeMapCommunicator shakeMapCommunicator;
@@ -49,6 +50,7 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
                 mGoogleApiClient);
 
         LatLng loc = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+        mLastGeoPoint = new ParseGeoPoint(loc.latitude, loc.longitude);
 
         /* save the parse location when first connecting */
         parse_user.put("location", new ParseGeoPoint(loc.latitude, loc.longitude));
@@ -167,11 +169,18 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
      */
     private void addPersonToMap(ParseGeoPoint geoPoint, String friendsName) {
         System.out.println("adding person..");
+        /* find the distance between two points */
+        double distanceFromUser = geoPoint.distanceInMilesTo(mLastGeoPoint);
+        /* set the double to only two decimal places */
+        String distance = String.format("%.2f", distanceFromUser);
+
+        /* create marker with names and distance */
         Marker marker = googleMap.addMarker(new MarkerOptions()
                 .position(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()))
-                .title(friendsName));
+                .title(friendsName + " is " + distance + " miles away."));
 
 
+        /* add marker to the map */
         grouped_markers.add(marker);
     }
 
