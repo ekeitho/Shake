@@ -387,14 +387,14 @@ public class ShakeMainActivity extends FragmentActivity
 
             long diff = now.getTimeInMillis() - last.getTimeInMillis();
 
-            if (mAccel > 13 && diff >= 5000 && parse_user.getString("active_group") != null) {
+            if (mAccel >= 12 && diff >= 15000 && parse_user.getString("active_group") != null) {
                 String message = "Request sent to " + group_names[mPosition];
                 Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
                 toast.show();
                 sendShakeNotification();
                 mLastDate = new Date();
             }
-            else if (mAccel > 13 && diff >= 5000 && parse_user.getString("active_group") == null) {
+            else if (mAccel >= 12 && diff >= 15000 && parse_user.getString("active_group") == null) {
                 String message = "Join a group to send Shake Requests!";
                 Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
                 toast.show();
