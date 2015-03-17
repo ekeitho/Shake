@@ -114,8 +114,6 @@ public class ShakeMainActivity extends FragmentActivity
      */
     private int mPosition;
 
-    private MenuItem hide_unhide_item;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -152,7 +150,7 @@ public class ShakeMainActivity extends FragmentActivity
             mPosition = position;
             /* set the title to the group chosen */
             mTitle = group_names[position];
-            /* unhide user */
+            /* hide user */
             parse_user.put("hidden", false);
         } else {
             /* default title */
@@ -160,7 +158,7 @@ public class ShakeMainActivity extends FragmentActivity
             if (friendsMapAreaFragment != null) {
                 friendsMapAreaFragment.clearMap();
             }
-            /* hide user */
+            /* unhide user */
             parse_user.put("hidden", true);
         }
         parse_user.saveInBackground();
@@ -213,7 +211,8 @@ public class ShakeMainActivity extends FragmentActivity
 
                                     /* communicate the group name and all associated member_ids
                                         to the map area fragment to update peoples mark */
-                                    friendsMapAreaFragment.communicate(groupId);
+                                    friendsMapAreaFragment.communicate(mTitle.toString(),
+                                            groupId, member_ids);
 
                                 } catch (JSONException e) {
                                     Log.d("NavDrawerFrag", "Bad json key for json array.");
@@ -248,23 +247,10 @@ public class ShakeMainActivity extends FragmentActivity
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
-            hide_unhide_item = menu.findItem(R.id.action_settings);
             restoreActionBar();
             return true;
         }
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        if (parse_user.getBoolean("hidden")) {
-            hide_unhide_item.setTitle(R.string.action_unhide);
-        }
-        else {
-            hide_unhide_item.setTitle(R.string.action_hide);
-        }
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -276,20 +262,10 @@ public class ShakeMainActivity extends FragmentActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            String active_group = parse_user.getString("active_group");
-            /* unhide */
-            if (parse_user.getBoolean("hidden")) {
-                active_group = active_group.trim();
-                getGroupData(ParseFacebookUtils.getSession());
-                friendsMapAreaFragment.communicate(active_group);
-                parse_user.put("active_group", active_group);
-            }
-            /* hide */
-            else {
-                active_group += "   ";
-                parse_user.put("active_group", active_group);
-                mNavigationDrawerFragment.updateActiveGroupPosition(-1);
-            }
+            parse_user.remove("active_group");
+            parse_user.saveInBackground();
+            mNavigationDrawerFragment.updateActiveGroupPosition(-1);
+
             return true;
         }
 
@@ -411,17 +387,11 @@ public class ShakeMainActivity extends FragmentActivity
 
             long diff = now.getTimeInMillis() - last.getTimeInMillis();
 
-            if (mAccel >= 12 && diff >= 15000 && !parse_user.getBoolean("hidden")) {
+            if (mAccel > 13 && diff >= 5000 && !parse_user.getString("active_group").isEmpty()) {
                 String message = "Request sent to " + group_names[mPosition];
                 Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
                 toast.show();
                 sendShakeNotification();
-                mLastDate = new Date();
-            }
-            else if (mAccel >= 12 && diff >= 15000 && parse_user.getBoolean("hidden")) {
-                String message = "Join a group to send Shake Requests!";
-                Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
-                toast.show();
                 mLastDate = new Date();
             }
         }

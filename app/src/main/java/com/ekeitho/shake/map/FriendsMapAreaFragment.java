@@ -61,7 +61,7 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
 
         googleMap.clear();
         googleMap.setMyLocationEnabled(true);
-        communicate(parse_user.getString("active_group"));
+        communicate(null, parse_user.getString("active_group"), null);
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 15));
     }
 
@@ -114,7 +114,7 @@ public class FriendsMapAreaFragment extends com.google.android.gms.maps.SupportM
         this method is how the main activity is passing values to this fragment.
         Depending on whats being passed in, will vary our queries;
      */
-    public void communicate(String groupId) {
+    public void communicate(String groupName, String groupId, ArrayList<String> member_ids) {
 
         /*
             if there are grouped markers and the user decided to chose another group
