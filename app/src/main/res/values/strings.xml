@@ -3,7 +3,7 @@
 
     <string name="app_name">Shake</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_hide">Hide Me!</string>
+    <string name="action_hide">Hide/Unhide</string>
     <string name="facebook_app_id">626413560791778</string>
     <string name="parse_app_id">Il62bTwt2UPvyLkGGEIBvY9xSYNsPC8EljZbyz0R</string>
     <string name="parse_client_key">2Qp7n7BWLQgGFxf3J0PFPCWLzcAMnIlGDSp6h87A</string>
