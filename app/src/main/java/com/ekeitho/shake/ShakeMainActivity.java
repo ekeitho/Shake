@@ -114,6 +114,8 @@ public class ShakeMainActivity extends FragmentActivity
      */
     private int mPosition;
 
+    private MenuItem hide_unhide_item;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -246,10 +248,23 @@ public class ShakeMainActivity extends FragmentActivity
             // if the drawer is not showing. Otherwise, let the drawer
             // decide what to show in the action bar.
             getMenuInflater().inflate(R.menu.main, menu);
+            hide_unhide_item = menu.findItem(R.id.action_settings);
             restoreActionBar();
             return true;
         }
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        if (parse_user.getBoolean("hidden")) {
+            hide_unhide_item.setTitle(R.string.action_unhide);
+        }
+        else {
+            hide_unhide_item.setTitle(R.string.action_hide);
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -403,7 +418,7 @@ public class ShakeMainActivity extends FragmentActivity
                 sendShakeNotification();
                 mLastDate = new Date();
             }
-            else if (mAccel >= 12 && diff >= 15000 && parse_user.getString("active_group") == null) {
+            else if (mAccel >= 12 && diff >= 15000 && parse_user.getBoolean("hidden")) {
                 String message = "Join a group to send Shake Requests!";
                 Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
                 toast.show();
